@@ -1,1856 +1,927 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="office">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SICO-EOV // Control de PSV, TV y Descanso - DGAC (DAN 135 / DAN 137)</title>
-    <!-- Tailwind CSS para utilidades de grilla -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Tipografía Técnica Industrial: IBM Plex Sans & IBM Plex Mono -->
+    <title>SICO-EOV // Control Operacional PSV, TV y PD</title>
+    <!-- Fuentes Técnicas: Rajdhani, Roboto y JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Rajdhani:wght@600;700&family=Roboto:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        /* ==========================================================================
-           ESTÉTICA INDUSTRIAL DE SOFTWARE DE OPERACIONES AÉREAS (SIN ESTILO IA)
-           ========================================================================== */
-        :root[data-theme="office"] {
-            --bg-app: #D4D8DD;
-            --bg-panel: #ECEEF1;
-            --bg-surface: #FFFFFF;
-            --bg-header: #1B2A38;
-            --bg-subheader: #2C3E50;
-            --bg-input: #FFFFFF;
-            --bg-input-disabled: #E2E6EA;
-            --bg-table-head: #DFE3E8;
-            --bg-table-row-alt: #F6F8FA;
-            --border-strong: #7F8C9A;
-            --border-subtle: #B8C0C8;
-            --text-main: #111820;
-            --text-muted: #4A5562;
-            --text-header: #F0F4F8;
-            --accent-primary: #004B87;
-            --accent-hover: #003865;
-            --status-ok-bg: #D4EDDA;
-            --status-ok-text: #155724;
-            --status-ok-border: #28A745;
-            --status-warn-bg: #FFF3CD;
-            --status-warn-text: #664D03;
-            --status-warn-border: #D99B00;
-            --status-err-bg: #F8D7DA;
-            --status-err-text: #721C24;
-            --status-err-border: #DC3545;
-            --night-hatch: rgba(27, 42, 56, 0.14);
-        }
-
-        :root[data-theme="efb"] {
-            --bg-app: #0E1217;
-            --bg-panel: #161C23;
-            --bg-surface: #1D252E;
-            --bg-header: #090C10;
-            --bg-subheader: #1F2933;
-            --bg-input: #11161C;
-            --bg-input-disabled: #181F27;
-            --bg-table-head: #242E3A;
-            --bg-table-row-alt: #192028;
-            --border-strong: #3A4756;
-            --border-subtle: #2A3440;
-            --text-main: #E4E9F0;
-            --text-muted: #8C9BAE;
-            --text-header: #E4E9F0;
-            --accent-primary: #0088CC;
-            --accent-hover: #00A3F5;
-            --status-ok-bg: #0D2E1B;
-            --status-ok-text: #3DD68C;
-            --status-ok-border: #1F7A4C;
-            --status-warn-bg: #332707;
-            --status-warn-text: #F5B82E;
-            --status-warn-border: #9E720B;
-            --status-err-bg: #381116;
-            --status-err-text: #FF6B7A;
-            --status-err-border: #A82533;
-            --night-hatch: rgba(0, 163, 245, 0.14);
-        }
-
-        :root[data-theme="paper"] {
-            --bg-app: #E5E5E5;
-            --bg-panel: #FFFFFF;
-            --bg-surface: #FFFFFF;
-            --bg-header: #000000;
-            --bg-subheader: #333333;
-            --bg-input: #FFFFFF;
-            --bg-input-disabled: #F0F0F0;
-            --bg-table-head: #E8E8E8;
-            --bg-table-row-alt: #FAFAFA;
-            --border-strong: #000000;
-            --border-subtle: #666666;
-            --text-main: #000000;
-            --text-muted: #333333;
-            --text-header: #FFFFFF;
-            --accent-primary: #000000;
-            --accent-hover: #333333;
-            --status-ok-bg: #EFEFEF;
-            --status-ok-text: #000000;
-            --status-ok-border: #000000;
-            --status-warn-bg: #DFDFDF;
-            --status-warn-text: #000000;
-            --status-warn-border: #000000;
-            --status-err-bg: #111111;
-            --status-err-text: #FFFFFF;
-            --status-err-border: #000000;
-            --night-hatch: rgba(0, 0, 0, 0.16);
+        :root {
+            --naranja: #FF6600;
+            --naranja-dark: #D45500;
+            --antracita: #5A5A5A;
+            --gris-fondo: #8A8A8A;
+            --azul-cabecera: #3B5998;
+            --gris-tarjetas: #737373;
+            --gris-interior: #525252;
+            --blanco: #FFFFFF;
+            --negro: #1A1A1A;
+            --verde-ok: #28a745;
+            --rojo-alerta: #dc3545;
+            --amarillo-alerta: #ffc107;
         }
 
         * {
-            border-radius: 0px !important; /* Cero bordes redondeados tipo IA */
             box-sizing: border-box;
+            border-radius: 0 !important;
         }
 
         body {
-            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, sans-serif;
-            background-color: var(--bg-app);
-            color: var(--text-main);
-            font-size: 12.5px;
-            line-height: 1.35;
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--gris-fondo);
+            color: var(--blanco);
             margin: 0;
-            padding: 0;
+            padding: 12px;
+            font-size: 13px;
         }
 
-        .font-mono-tech {
-            font-family: 'IBM Plex Mono', Consolas, monospace;
-            font-variant-numeric: tabular-nums;
+        .container {
+            max-width: 1350px;
+            margin: 0 auto;
+            background-color: var(--gris-tarjetas);
+            border: 1px solid var(--antracita);
+            padding: 16px;
         }
 
-        /* Paneles estructurales con bordes técnicos expuestos */
-        .tech-panel {
-            background-color: var(--bg-panel);
-            border: 1px solid var(--border-strong);
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--naranja);
+            padding-bottom: 12px;
+            margin-bottom: 16px;
         }
 
-        .tech-surface {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-        }
-
-        .tech-panel-header {
-            background-color: var(--bg-subheader);
-            color: var(--text-header);
-            padding: 5px 10px;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.06em;
+        .title-block h1 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 42px;
+            margin: 0;
+            line-height: 1;
+            color: var(--blanco);
+            letter-spacing: 1.5px;
             text-transform: uppercase;
-            border-bottom: 1px solid var(--border-strong);
+        }
+
+        .title-block .subtitle {
+            font-style: italic;
+            font-size: 14px;
+            color: #E0E0E0;
+            margin-top: 4px;
+            display: block;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        button {
+            background-color: var(--naranja);
+            color: var(--blanco);
+            border: 1px solid var(--antracita);
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            padding: 6px 14px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            background-color: var(--naranja-dark);
+        }
+
+        button.btn-secondary {
+            background-color: var(--antracita);
+        }
+        button.btn-secondary:hover {
+            background-color: #444;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        @media (max-width: 900px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--gris-interior);
+            border: 1px solid var(--antracita);
+            margin-bottom: 12px;
+        }
+
+        .card-header {
+            background-color: var(--azul-cabecera);
+            color: var(--blanco);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            padding: 7px 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-body {
+            padding: 12px;
+        }
+
+        .field-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            margin-bottom: 8px;
+            gap: 10px;
         }
 
-        /* Controles de formulario tipo escritorio clásico */
-        .tech-input, .tech-select {
-            background-color: var(--bg-input);
-            color: var(--text-main);
-            border: 1px solid var(--border-strong);
-            padding: 4px 7px;
-            font-size: 12px;
-            width: 100%;
-            height: 28px;
+        .field-row label {
+            font-weight: 500;
+            color: #F0F0F0;
+            font-size: 13px;
         }
 
-        .tech-input:focus, .tech-select:focus {
-            outline: 2px solid var(--accent-primary);
-            outline-offset: -2px;
+        input[type="text"], input[type="date"], input[type="time"], select {
+            background-color: #2E2E2E;
+            color: var(--blanco);
+            border: 1px solid var(--antracita);
+            padding: 5px 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-variant-numeric: tabular-nums;
         }
 
-        .tech-input:disabled, .tech-select:disabled {
-            background-color: var(--bg-input-disabled);
-            color: var(--text-muted);
-            cursor: not-allowed;
+        input:focus, select:focus {
+            outline: 1px solid var(--naranja);
+            background-color: #1F1F1F;
         }
 
-        .tech-label {
-            display: block;
-            font-size: 10.5px;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin-bottom: 3px;
-            letter-spacing: 0.03em;
-        }
-
-        /* Botones utilitarios */
-        .tech-btn {
-            background-color: var(--bg-surface);
-            color: var(--text-main);
-            border: 1px solid var(--border-strong);
-            padding: 4px 10px;
-            font-size: 11.5px;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
+        .checkbox-group {
+            display: flex;
             align-items: center;
             gap: 6px;
-            height: 28px;
+            font-size: 12px;
+            color: #EEE;
+            cursor: pointer;
         }
 
-        .tech-btn:hover {
-            background-color: var(--bg-table-head);
+        .checkbox-group input {
+            cursor: pointer;
         }
 
-        .tech-btn-primary {
-            background-color: var(--accent-primary);
-            color: #FFFFFF;
-            border: 1px solid var(--accent-primary);
-        }
-
-        .tech-btn-primary:hover {
-            background-color: var(--accent-hover);
-        }
-
-        /* Tablas tipo planilla de ingeniería */
-        .tech-table {
+        /* Tabla de vuelos */
+        table {
             width: 100%;
             border-collapse: collapse;
-            background-color: var(--bg-surface);
+            font-size: 12px;
+            background-color: #383838;
         }
 
-        .tech-table th {
-            background-color: var(--bg-table-head);
-            color: var(--text-main);
-            font-size: 10.5px;
+        th {
+            background-color: var(--azul-cabecera);
+            color: var(--blanco);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 14px;
             font-weight: 700;
+            padding: 6px 8px;
             text-transform: uppercase;
-            padding: 5px 8px;
-            border: 1px solid var(--border-subtle);
-            text-align: left;
+            border: 1px solid var(--antracita);
+            text-align: center;
         }
 
-        .tech-table td {
+        td {
+            border: 1px solid var(--antracita);
             padding: 4px 6px;
-            border: 1px solid var(--border-subtle);
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-variant-numeric: tabular-nums;
+        }
+
+        td input, td select {
+            width: 100%;
+            text-align: center;
+            padding: 3px 4px;
             font-size: 12px;
         }
 
-        .tech-table tbody tr:nth-child(even) {
-            background-color: var(--bg-table-row-alt);
+        .btn-del {
+            background-color: #900;
+            color: #FFF;
+            padding: 2px 6px;
+            font-size: 11px;
+            border: none;
+        }
+        .btn-del:hover {
+            background-color: #D00;
         }
 
-        /* Estados operativos */
-        .status-ok {
-            background-color: var(--status-ok-bg);
-            color: var(--status-ok-text);
-            border: 1px solid var(--status-ok-border);
-        }
-        .status-warn {
-            background-color: var(--status-warn-bg);
-            color: var(--status-warn-text);
-            border: 1px solid var(--status-warn-border);
-        }
-        .status-err {
-            background-color: var(--status-err-bg);
-            color: var(--status-err-text);
-            border: 1px solid var(--status-err-border);
+        /* Resumen de cómputos */
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 4px;
         }
 
-        /* Trama rayada para banda nocturna 21:00 - 06:00 */
-        .night-band-hatch {
-            background-image: repeating-linear-gradient(
-                -45deg,
-                var(--night-hatch),
-                var(--night-hatch) 6px,
-                transparent 6px,
-                transparent 12px
-            );
+        .summary-table td {
+            text-align: left;
+            padding: 6px 10px;
+            border: 1px solid var(--antracita);
+            font-size: 13px;
         }
 
-        /* Reglas de Impresión para Acta Oficial DGAC */
+        .summary-table td.val {
+            text-align: right;
+            font-weight: 700;
+            width: 50%;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            font-weight: 700;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+        .status-ok { background-color: var(--verde-ok); color: #fff; }
+        .status-warn { background-color: var(--amarillo-alerta); color: #000; }
+        .status-err { background-color: var(--rojo-alerta); color: #fff; }
+
+        /* Timeline 24H */
+        .timeline-box {
+            margin-top: 10px;
+            background-color: #222;
+            border: 1px solid var(--antracita);
+            padding: 10px;
+        }
+
+        .timeline-bar {
+            position: relative;
+            height: 28px;
+            background-color: #444;
+            border: 1px solid #666;
+            margin-top: 8px;
+        }
+
+        .night-band {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            background-color: rgba(30, 40, 70, 0.7);
+            border-left: 1px dashed #6888C8;
+            border-right: 1px dashed #6888C8;
+        }
+
+        .psv-block {
+            position: absolute;
+            top: 4px;
+            bottom: 4px;
+            background-color: rgba(255, 102, 0, 0.4);
+            border: 1px solid var(--naranja);
+        }
+
+        .flight-block {
+            position: absolute;
+            top: 7px;
+            bottom: 7px;
+            background-color: #3B5998;
+            border: 1px solid #789BDE;
+        }
+
+        .timeline-ticks {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: #BBB;
+            margin-top: 4px;
+        }
+
+        /* Vista para Imprimir Acta */
         @media print {
-            body {
-                background: #FFFFFF !important;
-                color: #000000 !important;
-            }
-            .no-print {
-                display: none !important;
-            }
-            .print-only {
-                display: block !important;
-            }
+            body { background: #FFF; color: #000; padding: 0; }
+            .container { border: none; padding: 0; background: #FFF; }
+            header button, .btn-del, .header-actions { display: none !important; }
+            .card { background: #FFF; border: 1px solid #000; page-break-inside: avoid; }
+            .card-header { background: #E0E0E0 !important; color: #000 !important; border-bottom: 1px solid #000; }
+            input, select { border: none; background: transparent; color: #000; font-weight: bold; }
+            .summary-table td, table th, table td { border: 1px solid #000; color: #000; background: #FFF !important; }
+            .print-signatures { display: block !important; margin-top: 40px; }
+        }
+
+        .print-signatures {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .sig-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            margin-top: 40px;
+        }
+
+        .sig-line {
+            border-top: 1px solid #000;
+            text-align: center;
+            font-size: 12px;
+            color: #000;
+            padding-top: 4px;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body>
+    <div class="container">
+        <header>
+            <div class="title-block">
+                <h1>SICO - EOV</h1>
+                <span class="subtitle">Sistema de Control Operacional PSV, TV y PD // DAN 135 Vol. I & DAN 137 DGAC Chile</span>
+            </div>
+            <div class="header-actions">
+                <button onclick="exportCSV()">Exportar CSV (Excel)</button>
+                <button class="btn-secondary" onclick="window.print()">Imprimir / PDF</button>
+            </div>
+        </header>
 
-    <!-- ==========================================================================
-         BARRA SUPERIOR DE SISTEMA (ESTILO TERMINAL DE OPERACIONES EOV)
-         ========================================================================== -->
-    <header style="background-color: var(--bg-header); color: var(--text-header); border-bottom: 2px solid var(--border-strong);" class="no-print px-3 py-1.5">
-        <div class="max-w-[1800px] mx-auto flex flex-wrap items-center justify-between gap-3">
-            
-            <!-- Identificación del Sistema -->
-            <div class="flex items-center gap-3">
-                <div class="px-2 py-0.5 font-mono-tech font-bold text-xs bg-amber-500 text-black tracking-tighter">
-                    DGAC // CHILE
-                </div>
-                <div class="flex items-baseline gap-2">
-                    <span class="font-bold text-sm tracking-wide">SICO-EOV v3.6</span>
-                    <span class="text-xs opacity-75 hidden md:inline">| Sistema de Control de Tiempo de Vuelo, PSV y Descanso (DAN 135 Vol. I / DAN 137)</span>
+        <div class="grid-layout">
+            <!-- 1. CONFIGURACIÓN GENERAL Y TRIPULACIÓN -->
+            <div class="card">
+                <div class="card-header">1. TRIPULACIÓN Y PARÁMETROS OPERACIONALES</div>
+                <div class="card-body">
+                    <div class="field-row">
+                        <label>Normativa Aplicable:</label>
+                        <select id="normaSelect">
+                            <option value="135">DAN 135 (Transporte Regular / No Reg.)</option>
+                            <option value="137">DAN 137 (Trabajos Aéreos / Ambulancia)</option>
+                        </select>
+                    </div>
+                    <div class="field-row">
+                        <label>Composición Tripulación:</label>
+                        <select id="crewSelect">
+                            <option value="1">1 Piloto (Single Pilot)</option>
+                            <option value="2" selected>2 Pilotos (Mínima Estándar)</option>
+                            <option value="3">3 Pilotos (Tripulación Reforzada)</option>
+                        </select>
+                    </div>
+                    <div class="field-row">
+                        <label>Piloto al Mando (PIC):</label>
+                        <input type="text" id="picName" value="Matías Quiroz G.">
+                    </div>
+                    <div class="field-row">
+                        <label>Segundo al Mando (SIC):</label>
+                        <input type="text" id="sicName" value="Primer Oficial">
+                    </div>
+                    <div class="field-row">
+                        <label>Matrícula / Aeronave:</label>
+                        <input type="text" id="acftReg" value="CC-CXY" style="text-transform: uppercase;">
+                    </div>
+                    <div class="field-row">
+                        <label>Condiciones Especiales:</label>
+                        <div style="display: flex; gap: 15px;">
+                            <label class="checkbox-group">
+                                <input type="checkbox" id="chkIMC"> >50% Vuelo en IMC (DAN 137)
+                            </label>
+                            <label class="checkbox-group">
+                                <input type="checkbox" id="chkExtension"> Extensión PSV (+2h)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="field-row" id="extReasonRow" style="display: none;">
+                        <label>Causal Extensión (MEL/Meteo/Emerg.):</label>
+                        <input type="text" id="extReason" placeholder="Fundamento según 135.605(b)(1)(vi)...">
+                    </div>
                 </div>
             </div>
 
-            <!-- Relojes Operacionales y Selector de Aspecto Visual -->
-            <div class="flex items-center gap-2 flex-wrap">
-                <!-- Reloj Local y UTC -->
-                <div class="flex items-center border border-slate-600 bg-black/40 px-2.5 py-1 text-xs font-mono-tech gap-3">
-                    <div>
-                        <span class="text-[10px] text-slate-400 mr-1">HORA LOCAL:</span>
-                        <span id="clockLocal" class="font-bold text-emerald-400">--:--:--</span>
+            <!-- 2. JORNADA Y DESPACHO (PS + PSV) -->
+            <div class="card">
+                <div class="card-header">2. CÓMPUTO DE JORNADA (PS + PSV EN HORA LOCAL)</div>
+                <div class="card-body">
+                    <div class="field-row">
+                        <label>Fecha de Operación:</label>
+                        <input type="date" id="opDate">
                     </div>
-                    <span class="text-slate-600">|</span>
-                    <div>
-                        <span class="text-[10px] text-slate-400 mr-1">UTC (Z):</span>
-                        <span id="clockUTC" class="font-bold text-amber-300">--:--:-- Z</span>
+                    <div class="field-row">
+                        <label>Período de Servicio Previo (PS):</label>
+                        <input type="time" id="psTime" value="00:00">
+                    </div>
+                    <div class="field-row">
+                        <label>Presentación Aeródromo (Inicio PSV):</label>
+                        <div style="display: flex; gap: 6px;">
+                            <input type="time" id="psvStartTime" value="07:15">
+                            <button type="button" class="btn-secondary" onclick="presetPresentacion(60)" style="font-size: 11px; padding: 4px 6px;">-60m 1°V</button>
+                            <button type="button" class="btn-secondary" onclick="presetPresentacion(10)" style="font-size: 11px; padding: 4px 6px;">-10m Alerta</button>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <label>Fin de Funciones (Fin PSV):</label>
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            <input type="time" id="psvEndTime" value="16:30">
+                            <label class="checkbox-group">
+                                <input type="checkbox" id="chkAutoFin" checked> Auto (+30m calzo)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <label>Noche Consecutiva Previa (DAN 135):</label>
+                        <label class="checkbox-group">
+                            <input type="checkbox" id="chkPrevNight"> Tuvo turno >50% nocturno ayer
+                        </label>
+                    </div>
+                    <div class="field-row">
+                        <label>Ubicación de Descanso (Post-Vuelo):</label>
+                        <select id="restLocation">
+                            <option value="base">Base Principal (+45 min traslado)</option>
+                            <option value="posta">Posta / Fuera de Base (+20 min traslado)</option>
+                        </select>
                     </div>
                 </div>
-
-                <!-- Selector de Esquema Visual (Para evitar aspecto genérico) -->
-                <div class="flex items-center gap-1">
-                    <label class="text-[10px] uppercase text-slate-300 font-semibold mr-1">Esquema UI:</label>
-                    <select id="themeSelector" onchange="changeVisualTheme(this.value)" class="bg-slate-800 text-white border border-slate-600 text-xs px-2 py-1 h-7 font-medium">
-                        <option value="office">1. Oficina EOV (Gris Técnico Claro)</option>
-                        <option value="efb">2. Consola Nocturna (Aviónica EFB)</option>
-                        <option value="paper">3. Formulario Técnico (Alto Contraste B/N)</option>
-                    </select>
-                </div>
-
-                <!-- Botones de Acción Global -->
-                <button onclick="toggleModal('modalNormativa')" class="tech-btn" style="height: 26px; font-size: 11px;">
-                    <i class="fa-solid fa-table-list"></i> Tablas Normativas
-                </button>
-                <button onclick="exportCurrentToCSV()" class="tech-btn" style="height: 26px; font-size: 11px;" title="Descargar planilla compatible con Excel">
-                    <i class="fa-solid fa-file-csv"></i> Exportar CSV (Excel)
-                </button>
-                <button onclick="openOfficialActModal()" class="tech-btn tech-btn-primary" style="height: 26px; font-size: 11px;">
-                    <i class="fa-solid fa-print"></i> Acta Oficial / Firma Comandante
-                </button>
             </div>
         </div>
-    </header>
 
-    <!-- ==========================================================================
-         ÁREA DE TRABAJO PRINCIPAL (GRILLA DE ALTA DENSIDAD)
-         ========================================================================== -->
-    <main class="flex-1 max-w-[1800px] w-full mx-auto p-2.5 grid grid-cols-1 lg:grid-cols-12 gap-2.5 no-print">
-
-        <!-- COLUMNA IZQUIERDA: SEGUIMIENTO DE TURNOS / TRIPULACIONES (3 COLS) -->
-        <aside class="lg:col-span-3 flex flex-col gap-2.5">
-            <div class="tech-panel flex flex-col h-full">
-                <div class="tech-panel-header">
-                    <span><i class="fa-solid fa-list-check mr-1.5"></i> Turnos en Control Operacional</span>
-                    <button onclick="createNewRoster()" class="px-2 py-0.5 bg-white text-slate-900 font-bold text-[10px] hover:bg-slate-200">
-                        + NUEVO DESPACHO
-                    </button>
-                </div>
-
-                <!-- Encabezado de tabla compacta de vuelos -->
-                <div class="p-2 flex-1 flex flex-col justify-between">
-                    <div>
-                        <div class="text-[11px] mb-2 pb-1.5 border-b" style="border-color: var(--border-subtle); color: var(--text-muted);">
-                            Seleccione una programación activa para auditar sus márgenes de PSV, TV, Período Nocturno y Descanso:
-                        </div>
-                        <div id="rosterList" class="space-y-1.5 max-h-[540px] overflow-y-auto">
-                            <!-- Renderizado por JS -->
-                        </div>
-                    </div>
-
-                    <!-- Resumen de Reglas Críticas en Pie de Panel -->
-                    <div class="mt-4 pt-2 border-t text-[11px] space-y-1" style="border-color: var(--border-strong); color: var(--text-muted);">
-                        <div class="font-bold uppercase text-[10px]" style="color: var(--text-main);">Parámetros Fijos de Referencia:</div>
-                        <div class="flex justify-between"><span>Período Nocturno Oficial:</span><span class="font-mono-tech font-bold">21:00 - 06:00 HL</span></div>
-                        <div class="flex justify-between"><span>50% Ventana Nocturna:</span><span class="font-mono-tech font-bold">04:30 hrs (270m)</span></div>
-                        <div class="flex justify-between"><span>Plazo Informe Exceso 135:</span><span class="font-mono-tech font-bold">Máx. 96 Horas</span></div>
-                        <div class="flex justify-between"><span>Plazo Informe Exceso 137:</span><span class="font-mono-tech font-bold">Máx. 72 Horas</span></div>
-                        <div class="flex justify-between"><span>Reporte Mensual SIGO:</span><span class="font-mono-tech font-bold">Días 1 al 10</span></div>
-                    </div>
-                </div>
+        <!-- 3. PLANILLA DE VUELOS (TV CALZO A CALZO) -->
+        <div class="card">
+            <div class="card-header">
+                <span>3. PLANILLA DE VUELOS (TIEMPO DE VUELO CALZO A CALZO - TV)</span>
+                <button type="button" onclick="addLeg()" style="background-color: var(--naranja); padding: 3px 8px; font-size: 12px;">+ AGREGAR TRAMO</button>
             </div>
-        </aside>
-
-        <!-- COLUMNA CENTRAL Y DERECHA: FICHA TÉCNICA DE CÁLCULO (9 COLS) -->
-        <section class="lg:col-span-9 flex flex-col gap-2.5">
-
-            <!-- BANDA DE DICTAMEN DE AUDITORÍA NORMATIVA -->
-            <div id="auditBanner" class="p-2.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 status-ok">
-                <!-- Renderizado dinámico por JS -->
+            <div class="card-body" style="padding: 0; overflow-x: auto;">
+                <table id="legsTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 35px;">#</th>
+                            <th style="width: 100px;">ORIGEN</th>
+                            <th style="width: 100px;">DESTINO</th>
+                            <th style="width: 110px;">FUERA CALZOS</th>
+                            <th style="width: 110px;">DESPEGUE</th>
+                            <th style="width: 110px;">ATERRIZAJE</th>
+                            <th style="width: 110px;">EN CALZOS</th>
+                            <th style="width: 130px;">PILOTO AL MANDO (PF)</th>
+                            <th style="width: 90px;">VUELO NETO</th>
+                            <th style="width: 90px;">TV (CALZOS)</th>
+                            <th style="width: 45px;">DEL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="legsBody">
+                        <!-- Generado dinámicamente -->
+                    </tbody>
+                </table>
             </div>
+        </div>
 
-            <!-- FILA DE LECTURAS TÉCNICAS (4 CAJAS DE AUDITORÍA NUMÉRICA) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2.5">
-                
-                <!-- LECTURA 1: PERÍODO DE SERVICIO DE VUELO (PSV) -->
-                <div class="tech-panel">
-                    <div class="tech-panel-header">
-                        <span>I. Período Servicio Vuelo (PSV)</span>
-                        <span id="kpiPsvLimitTag" class="font-mono-tech text-[10px] px-1.5 bg-black/30">MÁX 12:00</span>
-                    </div>
-                    <div class="p-2.5 tech-surface">
-                        <div class="flex items-baseline justify-between">
-                            <div>
-                                <span class="text-[10px] uppercase font-bold block" style="color: var(--text-muted);">PSV Total Computado</span>
-                                <span id="kpiPsvValue" class="font-mono-tech text-2xl font-bold">00:00</span>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-[10px] uppercase font-bold block" style="color: var(--text-muted);">Margen / Límite</span>
-                                <span id="kpiPsvMargin" class="font-mono-tech text-sm font-bold">12:00 disp.</span>
-                            </div>
-                        </div>
-                        <div class="w-full h-2 mt-2 border" style="background-color: var(--bg-app); border-color: var(--border-strong);">
-                            <div id="kpiPsvBar" class="h-full transition-all" style="width: 0%; background-color: var(--accent-primary);"></div>
-                        </div>
-                        <div class="flex justify-between text-[11px] font-mono-tech mt-1.5 pt-1 border-t" style="border-color: var(--border-subtle);">
-                            <span>Hora Límite Fin PSV:</span>
-                            <strong id="kpiMaxLegalHour">--:-- HL</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- LECTURA 2: TIEMPO DE VUELO (TV - CALZO A CALZO) -->
-                <div class="tech-panel">
-                    <div class="tech-panel-header">
-                        <span>II. Tiempo de Vuelo (TV Calzos)</span>
-                        <span id="kpiTvLimitTag" class="font-mono-tech text-[10px] px-1.5 bg-black/30">MÁX 08:00</span>
-                    </div>
-                    <div class="p-2.5 tech-surface">
-                        <div class="flex items-baseline justify-between">
-                            <div>
-                                <span class="text-[10px] uppercase font-bold block" style="color: var(--text-muted);">TV Entre Calzos</span>
-                                <span id="kpiTvValue" class="font-mono-tech text-2xl font-bold">00:00</span>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-[10px] uppercase font-bold block" style="color: var(--text-muted);">Margen TV</span>
-                                <span id="kpiTvMargin" class="font-mono-tech text-sm font-bold">08:00 disp.</span>
-                            </div>
-                        </div>
-                        <div class="w-full h-2 mt-2 border" style="background-color: var(--bg-app); border-color: var(--border-strong);">
-                            <div id="kpiTvBar" class="h-full transition-all" style="width: 0%; background-color: var(--accent-primary);"></div>
-                        </div>
-                        <div class="flex justify-between text-[11px] font-mono-tech mt-1.5 pt-1 border-t" style="border-color: var(--border-subtle);">
-                            <span>Vuelo Real (T/O a LDG):</span>
-                            <strong id="kpiAirborneTotal">00:00 hrs</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- LECTURA 3: EXPOSICIÓN EN PERÍODO NOCTURNO (21:00 - 06:00) -->
-                <div class="tech-panel">
-                    <div class="tech-panel-header">
-                        <span>III. Período Nocturno (21-06 HL)</span>
-                        <span id="kpiNightRuleBadge" class="font-mono-tech text-[10px] px-1.5 bg-black/30">DIURNO</span>
-                    </div>
-                    <div class="p-2.5 tech-surface">
-                        <div class="flex items-baseline justify-between">
-                            <div>
-                                <span class="text-[10px] uppercase font-bold block" style="color: var(--text-muted);">Tiempo en Noche</span>
-                                <span id="kpiNightValue" class="font-mono-tech text-2xl font-bold">00:00</span>
-                            </div>
-                            <div class="text-right font-mono-tech text-xs">
-                                <div><span style="color: var(--text-muted);">% de 9h:</span> <strong id="kpiNightPctWindow">0%</strong></div>
-                                <div><span style="color: var(--text-muted);">% del PSV:</span> <strong id="kpiNightPctPsv">0%</strong></div>
-                            </div>
-                        </div>
-                        <div class="w-full h-2 mt-2 border" style="background-color: var(--bg-app); border-color: var(--border-strong);">
-                            <div id="kpiNightBar" class="h-full transition-all" style="width: 0%; background-color: #4B5563;"></div>
-                        </div>
-                        <div class="flex justify-between text-[11px] font-mono-tech mt-1.5 pt-1 border-t" style="border-color: var(--border-subtle);">
-                            <span>Umbral 50% Noche:</span>
-                            <strong id="kpiNightThresholdText">Máx 04:30h en 2° noche</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- LECTURA 4: PERÍODO DE DESCANSO MÍNIMO (PD) -->
-                <div class="tech-panel">
-                    <div class="tech-panel-header">
-                        <span>IV. Descanso Obligatorio (PD)</span>
-                        <span id="kpiPdRuleTag" class="font-mono-tech text-[10px] px-1.5 bg-black/30">TABLA DGAC</span>
-                    </div>
-                    <div class="p-2.5 tech-surface">
-                        <div class="flex items-baseline justify-between">
-                            <div>
-                                <span class="text-[10px] uppercase font-bold block" style="color: var(--text-muted);">PD Mínimo Exigido</span>
-                                <span id="kpiPdValue" class="font-mono-tech text-2xl font-bold">10:00</span>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-[10px] uppercase font-bold block" style="color: var(--text-muted);">Traslado / Adic.</span>
-                                <span id="kpiPdExtra" class="font-mono-tech text-xs font-bold">+00:45 min</span>
-                            </div>
-                        </div>
-                        <div class="mt-2 pt-1.5 border-t text-[11px]" style="border-color: var(--border-subtle);">
-                            <span class="text-[10px] uppercase font-bold block" style="color: var(--text-muted);">Habilitado Próxima Presentación:</span>
-                            <strong id="kpiNextReportTime" class="font-mono-tech text-xs block mt-0.5">--/--/---- --:-- HL</strong>
-                        </div>
-                    </div>
-                </div>
-
+        <!-- 4. LÍNEA DE TIEMPO OPERACIONAL (24H) -->
+        <div class="timeline-box">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: bold;">
+                <span>LÍNEA DE TIEMPO OPERACIONAL 24 HORAS (HORA LOCAL)</span>
+                <span style="color: #6888C8;">■ Período Nocturno (21:00 a 06:00 HL)</span>
+                <span style="color: var(--naranja);">■ PSV Total</span>
+                <span style="color: #789BDE;">■ Tramos en Vuelo (TV)</span>
             </div>
-
-            <!-- REGLA GRÁFICA DE 24 HORAS (GANTT TÉCNICO DE DESPACHO) -->
-            <div class="tech-panel">
-                <div class="tech-panel-header">
-                    <span><i class="fa-solid fa-ruler-horizontal mr-1.5"></i> Carta de Proyección Horaria (24 Horas Consecutivas / Banda Nocturna 21:00 a 06:00 HL)</span>
-                    <div class="flex items-center gap-3 text-[10px] font-normal">
-                        <span>[///] Período Nocturno (21:00-06:00)</span>
-                        <span>[■] Bloque PSV</span>
-                        <span>[▬] Tramos TV (Calzos)</span>
-                        <span class="text-amber-300 font-bold">[|] Tope Máximo PSV</span>
-                    </div>
-                </div>
-                <div class="p-2.5 tech-surface">
-                    <div id="timelineContainer" class="relative w-full h-12 border overflow-hidden select-none" style="background-color: var(--bg-app); border-color: var(--border-strong);">
-                        <!-- Renderizado por JS -->
-                    </div>
-                    <div id="timelineLabels" class="flex justify-between text-[10px] font-mono-tech mt-1" style="color: var(--text-muted);">
-                        <!-- Renderizado por JS -->
-                    </div>
-                </div>
+            <div class="timeline-bar" id="timelineBar">
+                <!-- Franjas nocturnas fijas -->
+                <div class="night-band" style="left: 0%; width: 25%;"></div> <!-- 00:00 a 06:00 (6h = 25%) -->
+                <div class="night-band" style="left: 87.5%; width: 12.5%;"></div> <!-- 21:00 a 24:00 (3h = 12.5%) -->
+                <!-- Dinámicos insertados por JS -->
+                <div id="tlPsv" class="psv-block"></div>
+                <div id="tlFlights"></div>
             </div>
-
-            <!-- PANELES DE CONFIGURACIÓN TÉCNICA (DIVIDIDO EN 2 COLUMNAS) -->
-            <div class="grid grid-cols-1 xl:grid-cols-12 gap-2.5">
-                
-                <!-- PANEL 1: DATOS DE LA OPERACIÓN, TRIPULACIÓN Y NORMATIVA (7 COLS) -->
-                <div class="xl:col-span-7 tech-panel">
-                    <div class="tech-panel-header">
-                        <span>1. Identificación del Vuelo, Tripulación y Marco Reglamentario</span>
-                        <button onclick="deleteCurrentRoster()" class="text-[10px] px-1.5 py-0.5 bg-red-800 text-white hover:bg-red-700">
-                            Eliminar Registro
-                        </button>
-                    </div>
-                    <div class="p-3 tech-surface space-y-3">
-                        
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                            <div>
-                                <label class="tech-label">Normativa DGAC Aplicable</label>
-                                <select id="inputRegulation" onchange="handleFormChange()" class="tech-select font-bold">
-                                    <option value="DAN135">DAN 135 Vol. I (Transporte ≤19 Pax)</option>
-                                    <option value="DAN137">DAN 137 (Trabajos Aéreos)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="tech-label">Tipo de Operación / Servicio</label>
-                                <select id="inputOperationSubType" onchange="handleFormChange()" class="tech-select">
-                                    <option value="PAX_COM">Transporte Pasajeros / Carga</option>
-                                    <option value="MEDEVAC_BIMOTOR">Ambulancia Aérea / Rescate (Bimotor)</option>
-                                    <option value="MEDEVAC_MONO">Ambulancia Aérea / Rescate (Monomotor)</option>
-                                    <option value="INCENDIOS">Extinción de Incendios Forestales</option>
-                                    <option value="OTRO_TA">Otro Trabajo Aéreo (Agrícola / Pesca / Foto)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="tech-label">Dotación de Pilotos</label>
-                                <select id="inputCrewType" onchange="handleFormChange()" class="tech-select font-bold">
-                                    <option value="2">2 Pilotos (Comandante + Copiloto)</option>
-                                    <option value="1">1 Piloto (Tripulación Mínima)</option>
-                                    <option value="3" id="optCrew3">3 Pilotos (Tripulación Reforzada 135)</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                            <div class="col-span-2 sm:col-span-1">
-                                <label class="tech-label">Matrícula</label>
-                                <input type="text" id="inputTailNumber" oninput="handleFormChange()" class="tech-input font-mono-tech uppercase font-bold" placeholder="CC-XXX">
-                            </div>
-                            <div class="col-span-2 sm:col-span-2">
-                                <label class="tech-label">Identificador Vuelo / Orden de Misión</label>
-                                <input type="text" id="inputMissionName" oninput="handleFormChange()" class="tech-input" placeholder="Ej. Vuelo 204 / Evacuación Aeromédica">
-                            </div>
-                            <div class="col-span-2 sm:col-span-1">
-                                <label class="tech-label">Regla de Vuelo</label>
-                                <select id="inputFlightRules" onchange="handleFormChange()" class="tech-select font-mono-tech">
-                                    <option value="IFR">IFR (Instrumentos)</option>
-                                    <option value="VFR_DIA">VFR Diurno</option>
-                                    <option value="VFR_NOCHE">VFR Nocturno</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Nómina de Tripulantes -->
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 border-t" style="border-color: var(--border-subtle);">
-                            <div>
-                                <label class="tech-label">Piloto al Mando (Comandante)</label>
-                                <input type="text" id="inputPicName" oninput="handleFormChange()" class="tech-input" placeholder="Nombre y Apellido PIC">
-                            </div>
-                            <div id="containerSic">
-                                <label class="tech-label">Segundo al Mando (Copiloto)</label>
-                                <input type="text" id="inputSicName" oninput="handleFormChange()" class="tech-input" placeholder="Nombre y Apellido SIC">
-                            </div>
-                            <div id="containerRelief" class="hidden">
-                                <label class="tech-label">Piloto de Relevo (Reforzada)</label>
-                                <input type="text" id="inputReliefName" oninput="handleFormChange()" class="tech-input" placeholder="3° Piloto Habilitado">
-                            </div>
-                        </div>
-
-                        <!-- Parámetros Especiales de Reglamentación (DAN 135 vs DAN 137) -->
-                        <div class="p-2.5 border" style="background-color: var(--bg-panel); border-color: var(--border-strong);">
-                            <div class="text-[10.5px] font-bold uppercase mb-2 pb-1 border-b" style="border-color: var(--border-subtle);">
-                                Condicionantes Reglamentarias del Turno:
-                            </div>
-
-                            <!-- Opciones específicas DAN 135 -->
-                            <div id="optionsDAN135" class="space-y-2 text-xs">
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                                    <div>
-                                        <label class="tech-label">Causal Extensión PSV (+2h hasta 14h - 2 Pilotos)</label>
-                                        <select id="selExtensionReason135" onchange="handleFormChange()" class="tech-select">
-                                            <option value="NONE">Sin Extensión (Límite Ordinario 12:00h)</option>
-                                            <option value="METEO">135.605(b)(1)(vi)(A) Contingencia Meteorológica</option>
-                                            <option value="MEDICA">135.605(b)(1)(vi)(B) Emergencia Médica</option>
-                                            <option value="MEL">135.605(b)(1)(vi)(C) Necesidad Mantenimiento MEL</option>
-                                            <option value="SEGURIDAD">135.605(b)(1)(vi)(D) Decisión Comandante por Seguridad</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="tech-label">Base / Traslado para Descanso (135.605(b)(3))</label>
-                                        <div class="grid grid-cols-2 gap-1.5">
-                                            <select id="selRestLocation135" onchange="handleFormChange()" class="tech-select">
-                                                <option value="BASE">Base Principal (+45m)</option>
-                                                <option value="POSTA">Posta (+20m)</option>
-                                            </select>
-                                            <select id="selLongitudeChange135" onchange="handleFormChange()" class="tech-select" title="Cambio de longitud geográfica ≥ 45°">
-                                                <option value="0">Sin cambio Long.</option>
-                                                <option value="45">Long. 45° (+2:00h PD)</option>
-                                                <option value="60">Long. 60° (+2:30h PD)</option>
-                                                <option value="75">Long. 75° (+3:00h PD)</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <label class="flex items-start gap-2 pt-1 cursor-pointer">
-                                    <input type="checkbox" id="chkPrevNight135" onchange="handleFormChange()" class="mt-0.5">
-                                    <span>
-                                        <strong>El PSV anterior superó el 50% del Período Nocturno (>04:30 hrs entre 21:00 y 06:00)</strong>
-                                        <span class="block text-[11px]" style="color: var(--text-muted);">Activa restricción DAN 135.605(b)(1)(iv): Este 2° PSV nocturno consecutivo no puede superar 04:30 hrs nocturnas.</span>
-                                    </span>
-                                </label>
-                            </div>
-
-                            <!-- Opciones específicas DAN 137 -->
-                            <div id="optionsDAN137" class="space-y-2 text-xs hidden">
-                                <div class="p-1.5 border text-[11px] font-medium" style="background-color: var(--bg-surface); border-color: var(--border-subtle);">
-                                    <strong>Regla Automática DAN 137.145(c)(3):</strong> Si más del 50% del PSV se realiza en Período Nocturno (21:00 a 06:00), el sistema descuenta automáticamente <strong>2 horas</strong> al límite de TV (6h) y al límite de PSV (10h).
-                                </div>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                                    <label class="flex items-start gap-2 cursor-pointer">
-                                        <input type="checkbox" id="chkImc137" onchange="handleFormChange()" class="mt-0.5">
-                                        <span>
-                                            <strong>>50% del Tiempo de Vuelo en IMC</strong>
-                                            <span class="block text-[10.5px]" style="color: var(--text-muted);">DAN 137.145(c)(3)(i): Reduce TV y PSV en 2 horas.</span>
-                                        </span>
-                                    </label>
-                                    <label class="flex items-start gap-2 cursor-pointer">
-                                        <input type="checkbox" id="chkHighAlt137" onchange="handleFormChange()" class="mt-0.5">
-                                        <span>
-                                            <strong>Helicóptero operando en base ≥ 10.000 ft</strong>
-                                            <span class="block text-[10.5px]" style="color: var(--text-muted);">DAN 137.145(c)(6): Reduce el límite de TV en 2 horas.</span>
-                                        </span>
-                                    </label>
-                                    <label class="flex items-start gap-2 cursor-pointer sm:col-span-2">
-                                        <input type="checkbox" id="chkShortFlights137" onchange="handleFormChange()" class="mt-0.5">
-                                        <span>
-                                            <strong>Vuelos cortos con PSV prolongado (+20% PSV y +20% Descanso PD)</strong>
-                                            <span class="block text-[10.5px]" style="color: var(--text-muted);">DAN 137.145(c)(4): Aplicable solo cuando el Tiempo de Vuelo (TV) programado no exceda 06:00 horas.</span>
-                                        </span>
-                                    </label>
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- PANEL 2: CÓMPUTO HORARIO DE PRESENTACIÓN, PS PREVIO Y FIN DE FUNCIONES (5 COLS) -->
-                <div class="xl:col-span-5 tech-panel flex flex-col justify-between">
-                    <div class="tech-panel-header">
-                        <span>2. Cómputo de Jornada (PS + PSV)</span>
-                        <span class="font-mono-tech text-[10px]">HORA LOCAL (HL)</span>
-                    </div>
-                    <div class="p-3 tech-surface flex-1 flex flex-col justify-between space-y-3">
-                        
-                        <div class="space-y-2.5">
-                            <!-- Período de Servicio (PS) previo ajeno al vuelo -->
-                            <div class="grid grid-cols-12 gap-2 items-end">
-                                <div class="col-span-8">
-                                    <label class="tech-label">Período de Servicio (PS) Previo (135.605(b)(1)(viii))</label>
-                                    <span class="text-[10.5px] block" style="color: var(--text-muted);">Actividad administrativa o en tierra asignada antes de iniciar el PSV:</span>
-                                </div>
-                                <div class="col-span-4">
-                                    <input type="time" id="inputPriorPs" value="00:00" onchange="handleFormChange()" class="tech-input font-mono-tech font-bold text-center">
-                                </div>
-                            </div>
-
-                            <!-- Inicio PSV -->
-                            <div class="pt-1 border-t" style="border-color: var(--border-subtle);">
-                                <div class="flex justify-between items-center mb-1">
-                                    <label class="tech-label mb-0">Presentación en Aeródromo (Inicio PSV)</label>
-                                    <div class="flex gap-1">
-                                        <button onclick="setReportToFirstLeg(-60)" class="text-[10px] px-1.5 py-0.5 border font-mono-tech" style="border-color: var(--border-subtle); background-color: var(--bg-panel);">-60m 1°Calzo</button>
-                                        <button onclick="setReportToFirstLeg(-10)" class="text-[10px] px-1.5 py-0.5 border font-mono-tech" style="border-color: var(--border-subtle); background-color: var(--bg-panel);" title="Alerta rápida DAN 137 (mín 10 min)">-10m Alerta</button>
-                                    </div>
-                                </div>
-                                <input type="datetime-local" id="inputPsvStart" onchange="handleFormChange()" class="tech-input font-mono-tech font-bold">
-                            </div>
-
-                            <!-- Fin PSV -->
-                            <div>
-                                <div class="flex justify-between items-center mb-1">
-                                    <label class="tech-label mb-0">Término de Funciones (Fin PSV)</label>
-                                    <label class="flex items-center gap-1 text-[10.5px] cursor-pointer font-semibold">
-                                        <input type="checkbox" id="chkAutoPsvEnd" onchange="handleFormChange()">
-                                        <span>Auto (Último Calzo + 30 min)</span>
-                                    </label>
-                                </div>
-                                <input type="datetime-local" id="inputPsvEnd" onchange="handleFormChange()" class="tech-input font-mono-tech font-bold">
-                            </div>
-                        </div>
-
-                        <!-- Tabla de Auditoría de Tiempos del Turno -->
-                        <table class="tech-table font-mono-tech text-xs mt-2">
-                            <tbody>
-                                <tr>
-                                    <td class="font-sans font-semibold" style="color: var(--text-muted);">PS Previo + PSV Vuelo:</td>
-                                    <td id="auditPsPlusPsv" class="text-right font-bold">00:00 + 00:00 = 00:00</td>
-                                </tr>
-                                <tr>
-                                    <td class="font-sans font-semibold" style="color: var(--text-muted);">Tope Legal Liberación Tripulación:</td>
-                                    <td id="auditMaxReleaseTime" class="text-right font-bold">--/-- --:-- HL</td>
-                                </tr>
-                                <tr>
-                                    <td class="font-sans font-semibold" style="color: var(--text-muted);">Horas dentro de 21:00 a 06:00 HL:</td>
-                                    <td id="auditNightBreakdown" class="text-right font-bold">00:00 hrs (0%)</td>
-                                </tr>
-                                <tr>
-                                    <td class="font-sans font-semibold" style="color: var(--text-muted);">Estado de Exceso Reglamentario:</td>
-                                    <td id="auditExcessCell" class="text-right font-bold">00:00 (SIN EXCESO)</td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                    </div>
-                </div>
-
+            <div class="timeline-ticks">
+                <span>00:00</span><span>03:00</span><span>06:00</span><span>09:00</span>
+                <span>12:00</span><span>15:00</span><span>18:00</span><span>21:00</span><span>24:00</span>
             </div>
+        </div>
 
-            <!-- PANEL 3: PLANILLA DE TRAMOS DE VUELO (SERIE DE VUELOS) -->
-            <div class="tech-panel">
-                <div class="tech-panel-header">
-                    <span><i class="fa-solid fa-table mr-1.5"></i> 3. Planilla de Serie de Vuelos (Cómputo de Tiempo de Vuelo Calzo a Calzo - TV)</span>
-                    <button onclick="addFlightLeg()" class="px-2.5 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-[10.5px]">
-                        + AGREGAR TRAMO DE VUELO
-                    </button>
-                </div>
-                <div class="p-2.5 tech-surface overflow-x-auto">
-                    <table class="tech-table">
-                        <thead>
-                            <tr>
-                                <th class="w-10 text-center">#</th>
-                                <th class="w-24">Origen (OACI)</th>
-                                <th class="w-24">Destino (OACI)</th>
-                                <th>Fuera Calzos (OFF BLOCK)</th>
-                                <th>Despegue (T/O)</th>
-                                <th>Aterrizaje (LDG)</th>
-                                <th>En Calzos (ON BLOCK)</th>
-                                <th>Piloto a los Controles (PF)</th>
-                                <th class="text-right">Vuelo Real</th>
-                                <th class="text-right">TV (Calzos)</th>
-                                <th class="w-12 text-center">Quitar</th>
-                            </tr>
-                        </thead>
-                        <tbody id="legsTableBody" class="font-mono-tech">
-                            <!-- Renderizado por JS -->
-                        </tbody>
-                        <tfoot>
-                            <tr style="background-color: var(--bg-table-head);" class="font-mono-tech font-bold">
-                                <td colspan="8" class="text-right font-sans uppercase text-[11px]">Totales Acumulados en la Serie de Vuelos:</td>
-                                <td id="tableTotalAirborne" class="text-right">00:00</td>
-                                <td id="tableTotalBlock" class="text-right text-sm" style="color: var(--accent-primary);">00:00</td>
-                                <td></td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
+        <!-- 5. DICTAMEN LEGAL Y CÓMPUTO FINAL -->
+        <div class="card" style="margin-top: 12px;">
+            <div class="card-header">5. BALANCE Y DICTAMEN DE CUMPLIMIENTO REGLAMENTARIO</div>
+            <div class="card-body">
+                <table class="summary-table">
+                    <tr>
+                        <td><strong>Período de Servicio Total (PS Previo + PSV):</strong></td>
+                        <td class="val" id="resPSTotal">--</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Límite Legal PSV Máximo Permitido:</strong></td>
+                        <td class="val" id="resPSVLimit">--</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hora Límite Legal Término de Funciones:</strong></td>
+                        <td class="val" id="resTopeHora">--</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tiempo de Vuelo Total (TV Acumulado):</strong></td>
+                        <td class="val" id="resTVTotal">--</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Límite Legal TV Máximo (24 horas):</strong></td>
+                        <td class="val" id="resTVLimit">--</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Horas dentro de Período Nocturno (21:00 - 06:00 HL):</strong></td>
+                        <td class="val" id="resNightOps">--</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Período de Descanso Mínimo Obligatorio (PD en Tierra):</strong></td>
+                        <td class="val" id="resPDRequerido">--</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hora Mínima Próxima Presentación:</strong></td>
+                        <td class="val" id="resProximaPresentacion">--</td>
+                    </tr>
+                    <tr style="background-color: #404040;">
+                        <td><strong style="font-size: 15px;">ESTADO DE CONFORMIDAD DGAC:</strong></td>
+                        <td class="val" id="resStatusBadge">--</td>
+                    </tr>
+                </table>
             </div>
+        </div>
 
-        </section>
-    </main>
-
-    <!-- ==========================================================================
-         MODAL 1: TABLAS OFICIALES DGAC (DAN 135 VOL. I & DAN 137)
-         ========================================================================== -->
-    <div id="modalNormativa" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4 no-print">
-        <div class="tech-panel max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div class="tech-panel-header">
-                <span>Extracto Normativo Oficial DGAC Chile — DAN 135.605 y DAN 137.145</span>
-                <button onclick="toggleModal('modalNormativa')" class="px-2 py-0.5 bg-red-700 text-white font-bold">CERRAR [X]</button>
+        <!-- SECCIÓN DE FIRMAS PARA IMPRESIÓN / ACTA -->
+        <div class="print-signatures">
+            <div style="font-size: 11px; margin-bottom: 25px; border: 1px solid #000; padding: 8px;">
+                <strong>DECLARACIÓN OPERACIONAL:</strong> Se certifica que los Tiempos de Vuelo (TV), Períodos de Servicio de Vuelo (PSV) y Períodos de Descanso (PD) registrados se ajustan estrictamente a lo prescrito en la normativa aeronáutica aplicable (DAN 135 / DAN 137). En caso de existir extensión de PSV, constan en la presente acta las causales fundadas suscritas por el Comandante y el Encargado de Operaciones de Vuelo (EOV) para el archivo legal de 6 meses.
             </div>
-            <div class="p-4 tech-surface grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                <div>
-                    <div class="font-bold uppercase mb-2 pb-1 border-b" style="border-color: var(--border-strong);">1. Límites de PSV, TV y Reglas Nocturnas</div>
-                    <table class="tech-table text-xs mb-3">
-                        <thead>
-                            <tr>
-                                <th>Parámetro / Dotación</th>
-                                <th>DAN 135 Vol. I</th>
-                                <th>DAN 137 (Trabajos Aéreos)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>1 Piloto (Mínima)</strong></td>
-                                <td class="font-mono-tech">TV: 8h | PSV: 12h (Sin ext.)</td>
-                                <td class="font-mono-tech">TV: 8h | PSV: 12h</td>
-                            </tr>
-                            <tr>
-                                <td><strong>2 Pilotos</strong></td>
-                                <td class="font-mono-tech">TV: 8h | PSV: 12h (+2h ext = 14h)</td>
-                                <td class="font-mono-tech">TV: 8h | PSV: 12h</td>
-                            </tr>
-                            <tr>
-                                <td><strong>3 Pilotos (Reforzada)</strong></td>
-                                <td class="font-mono-tech">PSV: 18h (Máx 8h controles/piloto)</td>
-                                <td>No aplica</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Período Nocturno</strong></td>
-                                <td colspan="2" class="font-mono-tech font-bold">21:00 a 06:00 Hora Local (9 horas)</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Regla Nocturna Especial</strong></td>
-                                <td>Si cumple >50% del período nocturno (>4h30m), el 2° PSV nocturno consecutivo no puede superar 50% (4h30m).</td>
-                                <td>Si >50% del PSV es nocturno o >50% del TV es IMC, <strong>TV y PSV se reducen en 2 horas</strong> (TV 6h / PSV 10h).</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Exigencia 2 Pilotos</strong></td>
-                                <td>Pasajeros en IFR o aviones ≥10 asientos.</td>
-                                <td>VFR Nocturno o IFR (excepto helicópteros) y Ambulancia/Rescate Bimotor VFR/IFR.</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <div class="sig-grid">
+                <div class="sig-line">
+                    <strong id="sigPicName">PILOTO AL MANDO (PIC)</strong><br>
+                    Licencia DGAC / Firma
                 </div>
-
-                <div>
-                    <div class="font-bold uppercase mb-2 pb-1 border-b" style="border-color: var(--border-strong);">2. Tabla Oficial de Período de Descanso (PD)</div>
-                    <table class="tech-table font-mono-tech text-xs">
-                        <thead>
-                            <tr>
-                                <th>PSV Efectivamente Realizado</th>
-                                <th>PD Mínimo (DAN 135)</th>
-                                <th>PD Mínimo (DAN 137)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>7 horas o menos</td><td>10 hrs (+45m Base / +20m Posta)</td><td>10 horas</td></tr>
-                            <tr><td>8 horas</td><td>12 horas</td><td>12 horas</td></tr>
-                            <tr><td>9 horas</td><td>13 horas</td><td>13 horas</td></tr>
-                            <tr><td>10 horas</td><td>14 horas</td><td>14 horas</td></tr>
-                            <tr><td>11 a 12 horas</td><td>15 horas</td><td>15 horas</td></tr>
-                            <tr><td>13 horas</td><td>16 horas</td><td>16 horas</td></tr>
-                            <tr><td>14 a 15 horas</td><td>17 horas</td><td>17 horas</td></tr>
-                            <tr><td>16 horas</td><td>18 horas</td><td>18 horas</td></tr>
-                            <tr><td>17 horas</td><td>19 horas</td><td>19 horas</td></tr>
-                            <tr><td>18 horas</td><td>20 horas</td><td>20 horas</td></tr>
-                            <tr><td>19 / 20 horas</td><td>-.-</td><td>22 hrs / 24 hrs</td></tr>
-                        </tbody>
-                    </table>
+                <div class="sig-line">
+                    <strong>ENCARGADO DE OPERACIONES (EOV)</strong><br>
+                    Licencia DGAC / Firma y Timbre Despacho
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ==========================================================================
-         MODAL 2: ACTA OFICIAL DE DESPACHO / EXTENSIÓN DE PSV (CON FIRMAS)
-         ========================================================================== -->
-    <div id="modalActa" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white text-black border-2 border-black max-w-3xl w-full max-h-[92vh] overflow-y-auto p-6 font-mono-tech text-xs">
-            
-            <!-- Botones superiores visibles solo en pantalla -->
-            <div class="flex justify-between items-center pb-3 mb-4 border-b-2 border-black no-print font-sans">
-                <span class="font-bold text-sm uppercase">Vista Previa de Documento Oficial (Archivo 6 Meses DGAC)</span>
-                <div class="flex gap-2">
-                    <button onclick="copyActaText()" class="px-3 py-1 bg-slate-200 border border-black font-bold text-xs hover:bg-slate-300">
-                        <i class="fa-regular fa-copy"></i> Copiar Texto
-                    </button>
-                    <button onclick="window.print()" class="px-3 py-1 bg-blue-900 text-white font-bold text-xs hover:bg-blue-800">
-                        <i class="fa-solid fa-print"></i> Imprimir / Guardar PDF
-                    </button>
-                    <button onclick="toggleModal('modalActa')" class="px-3 py-1 bg-red-700 text-white font-bold text-xs">
-                        Cerrar [X]
-                    </button>
-                </div>
-            </div>
-
-            <!-- Contenido Imprimible del Acta -->
-            <div id="printableActaContent" class="space-y-4">
-                <!-- Generado dinámicamente por JS -->
-            </div>
-
-        </div>
-    </div>
-
-    <!-- ==========================================================================
-         LÓGICA DE CÁLCULO Y CONTROL OPERACIONAL (JAVASCRIPT)
-         ========================================================================== -->
     <script>
-        const todayStr = new Date().toISOString().slice(0, 10);
-        const tomorrowDate = new Date();
-        tomorrowDate.setDate(tomorrowDate.getDate() + 1);
-        const tomorrowStr = tomorrowDate.toISOString().slice(0, 10);
+        // Inicialización de fecha actual (2026)
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        document.getElementById('opDate').value = `${yyyy}-${mm}-${dd}`;
 
-        // Escenarios precargados realistas de aviación chilena
-        let rosters = [
-            {
-                id: 'r-1',
-                missionName: 'Ambulancia Aérea #402 (Traslado Secundario)',
-                tailNumber: 'CC-AWM',
-                regulation: 'DAN137',
-                operationSubType: 'MEDEVAC_BIMOTOR',
-                crewType: '2',
-                flightRules: 'IFR',
-                picName: 'Cap. Roberto Guzmán',
-                sicName: 'F/O Valentina Soto',
-                reliefName: '',
-                priorPs: '00:00',
-                psvStart: `${todayStr}T20:00`,
-                psvEnd: `${tomorrowStr}T04:45`,
-                autoPsvEnd: true,
-                prevNight135: false,
-                extensionReason135: 'NONE',
-                restLocation135: 'BASE',
-                longitudeChange135: '0',
-                imc137: false,
-                highAlt137: false,
-                shortFlights137: false,
-                legs: [
-                    { id: '1', origin: 'SCTB', dest: 'SCFA', offBlock: '21:00', takeoff: '21:10', landing: '23:35', onBlock: '23:45', pf: 'PIC' },
-                    { id: '2', origin: 'SCFA', dest: 'SCEL', offBlock: '01:30', takeoff: '01:40', landing: '04:05', onBlock: '04:15', pf: 'SIC' }
-                ]
-            },
-            {
-                id: 'r-2',
-                missionName: 'Vuelo Regular Sur #108',
-                tailNumber: 'CC-CPO',
-                regulation: 'DAN135',
-                operationSubType: 'PAX_COM',
-                crewType: '2',
-                flightRules: 'IFR',
-                picName: 'Cap. Andrés Morales',
-                sicName: 'F/O Diego Herrera',
-                reliefName: '',
-                priorPs: '00:30',
-                psvStart: `${todayStr}T07:30`,
-                psvEnd: `${todayStr}T17:15`,
-                autoPsvEnd: true,
-                prevNight135: false,
-                extensionReason135: 'NONE',
-                restLocation135: 'BASE',
-                longitudeChange135: '0',
-                imc137: false,
-                highAlt137: false,
-                shortFlights137: false,
-                legs: [
-                    { id: '3', origin: 'SCEL', dest: 'SCIE', offBlock: '08:30', takeoff: '08:42', landing: '09:50', onBlock: '10:00', pf: 'PIC' },
-                    { id: '4', origin: 'SCIE', dest: 'SCTE', offBlock: '10:45', takeoff: '10:55', landing: '12:05', onBlock: '12:15', pf: 'SIC' },
-                    { id: '5', origin: 'SCTE', dest: 'SCEL', offBlock: '14:30', takeoff: '14:40', landing: '16:35', onBlock: '16:45', pf: 'PIC' }
-                ]
-            },
-            {
-                id: 'r-3',
-                missionName: 'Charter Minero (2° Noche Consecutiva)',
-                tailNumber: 'CC-PMQ',
-                regulation: 'DAN135',
-                operationSubType: 'PAX_COM',
-                crewType: '2',
-                flightRules: 'IFR',
-                picName: 'Cap. Javier Paredes',
-                sicName: 'F/O Camila Ríos',
-                reliefName: '',
-                priorPs: '00:00',
-                psvStart: `${todayStr}T19:30`,
-                psvEnd: `${tomorrowStr}T02:30`,
-                autoPsvEnd: true,
-                prevNight135: true,
-                extensionReason135: 'NONE',
-                restLocation135: 'POSTA',
-                longitudeChange135: '0',
-                imc137: false,
-                highAlt137: false,
-                shortFlights137: false,
-                legs: [
-                    { id: '6', origin: 'SCEL', dest: 'SCCF', offBlock: '20:30', takeoff: '20:42', landing: '22:45', onBlock: '22:55', pf: 'PIC' },
-                    { id: '7', origin: 'SCCF', dest: 'SCEL', offBlock: '23:45', takeoff: '23:55', landing: '01:50', onBlock: '02:00', pf: 'SIC' }
-                ]
-            }
+        // Estructura de tramos de vuelo
+        let legs = [
+            { origen: 'SCEL', destino: 'SCCY', out: '08:15', off: '08:25', on: '11:05', in: '11:15', pf: 'PIC' },
+            { origen: 'SCCY', destino: 'SCEL', out: '13:00', off: '13:10', on: '15:45', in: '15:55', pf: 'SIC' }
         ];
 
-        let currentRosterId = rosters[0].id;
-
-        // Funciones auxiliares de tiempo
-        function formatMinutesToHHMM(totalMinutes) {
-            if (isNaN(totalMinutes)) return '00:00';
-            const sign = totalMinutes < 0 ? '-' : '';
-            const absMin = Math.round(Math.abs(totalMinutes));
-            const h = Math.floor(absMin / 60);
-            const m = absMin % 60;
-            return `${sign}${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        // Función para convertir HH:MM a minutos
+        function timeToMin(timeStr) {
+            if (!timeStr || !timeStr.includes(':')) return 0;
+            const [h, m] = timeStr.split(':').map(Number);
+            return (h * 60) + m;
         }
 
-        function parseHHMMToMinutes(hhmm) {
-            if (!hhmm || !hhmm.includes(':')) return 0;
-            const [h, m] = hhmm.split(':').map(Number);
-            if (isNaN(h) || isNaN(m)) return 0;
-            return h * 60 + m;
+        // Función para convertir minutos a HH:MM
+        function minToTime(minutes) {
+            minutes = Math.round(minutes);
+            let m = minutes % 1440;
+            if (m < 0) m += 1440;
+            const h = Math.floor(m / 60);
+            const min = m % 60;
+            return `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
         }
 
-        function getDiffMinutesHHMM(startHHMM, endHHMM) {
-            if (!startHHMM || !endHHMM) return 0;
-            const s = parseHHMMToMinutes(startHHMM);
-            const e = parseHHMMToMinutes(endHHMM);
-            let diff = e - s;
-            if (diff < 0) diff += 1440;
-            return diff;
+        // Renderizado de tabla de vuelos evitando re-render agresivo del DOM
+        function renderLegsTable() {
+            const tbody = document.getElementById('legsBody');
+            tbody.innerHTML = '';
+
+            legs.forEach((leg, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td><input type="text" value="${leg.origen}" onchange="updateLegField(${index}, 'origen', this.value)" style="text-transform:uppercase;"></td>
+                    <td><input type="text" value="${leg.destino}" onchange="updateLegField(${index}, 'destino', this.value)" style="text-transform:uppercase;"></td>
+                    <td><input type="time" value="${leg.out}" onchange="updateLegField(${index}, 'out', this.value)"></td>
+                    <td><input type="time" value="${leg.off}" onchange="updateLegField(${index}, 'off', this.value)"></td>
+                    <td><input type="time" value="${leg.on}" onchange="updateLegField(${index}, 'on', this.value)"></td>
+                    <td><input type="time" value="${leg.in}" onchange="updateLegField(${index}, 'in', this.value)"></td>
+                    <td>
+                        <select onchange="updateLegField(${index}, 'pf', this.value)">
+                            <option value="PIC" ${leg.pf === 'PIC' ? 'selected' : ''}>PIC</option>
+                            <option value="SIC" ${leg.pf === 'SIC' ? 'selected' : ''}>SIC</option>
+                        </select>
+                    </td>
+                    <td id="flightTime_${index}">--:--</td>
+                    <td id="blockTime_${index}">--:--</td>
+                    <td><button type="button" class="btn-del" onclick="removeLeg(${index})">X</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+            calculateTotals();
         }
 
-        // Calcula minutos exactos dentro de la banda nocturna 21:00 a 06:00 HL
-        function calculateNightMinutes(startDate, endDate) {
-            if (!startDate || !endDate || endDate <= startDate) return 0;
+        function updateLegField(index, field, value) {
+            legs[index][field] = value;
+            calculateTotals();
+        }
+
+        function addLeg() {
+            const lastLeg = legs[legs.length - 1];
+            let newOut = '16:00', newOff = '16:10', newOn = '17:00', newIn = '17:10';
+            let newOrig = 'SCEL', newDest = 'SCQP';
+
+            if (lastLeg) {
+                newOrig = lastLeg.destino;
+                newDest = (lastLeg.destino === 'SCEL') ? 'SCIE' : 'SCEL';
+                const lastInMin = timeToMin(lastLeg.in);
+                newOut = minToTime(lastInMin + 45);
+                newOff = minToTime(lastInMin + 55);
+                newOn = minToTime(lastInMin + 145);
+                newIn = minToTime(lastInMin + 155);
+            }
+
+            legs.push({ origen: newOrig, destino: newDest, out: newOut, off: newOff, on: newOn, in: newIn, pf: 'PIC' });
+            renderLegsTable();
+        }
+
+        function removeLeg(index) {
+            if (legs.length > 1) {
+                legs.splice(index, 1);
+                renderLegsTable();
+            } else {
+                alert('Debe existir al menos un tramo de vuelo registrado.');
+            }
+        }
+
+        function presetPresentacion(minutosAntes) {
+            if (legs.length > 0 && legs[0].out) {
+                const firstOutMin = timeToMin(legs[0].out);
+                const psvStart = minToTime(firstOutMin - minutosAntes);
+                document.getElementById('psvStartTime').value = psvStart;
+                calculateTotals();
+            }
+        }
+
+        // Cálculo de horas dentro de la ventana nocturna (21:00 a 06:00)
+        function getMinutesInNightWindow(startMin, endMin) {
+            if (endMin < startMin) endMin += 1440; // Cruce de medianoche
             let nightMinutes = 0;
-            const maxMinutes = Math.min(Math.round((endDate - startDate) / 60000), 2160);
-            let cursor = new Date(startDate.getTime());
 
-            for (let i = 0; i < maxMinutes; i++) {
-                const h = cursor.getHours();
-                if (h >= 21 || h < 6) {
+            for (let m = startMin; m < endMin; m++) {
+                const minuteOfDay = m % 1440;
+                // Ventana: 21:00 (1260) hasta 06:00 (360)
+                if (minuteOfDay >= 1260 || minuteOfDay < 360) {
                     nightMinutes++;
                 }
-                cursor.setMinutes(cursor.getMinutes() + 1);
             }
             return nightMinutes;
         }
 
-        // Tabla de Descanso DGAC (DAN 135.605(b)(3) y DAN 137.145(c)(2))
-        function calculateRestRequirements(totalDutyMinutes, r) {
-            const dutyHours = totalDutyMinutes / 60;
-            let baseRestHours = 10;
+        // CÓMPUTO COMPLETO SEGÚN DAN 135 Y DAN 137
+        function calculateTotals() {
+            const norma = document.getElementById('normaSelect').value;
+            const crew = parseInt(document.getElementById('crewSelect').value);
+            const isIMC = document.getElementById('chkIMC').checked;
+            const isExt = document.getElementById('chkExtension').checked;
+            const prevNight = document.getElementById('chkPrevNight').checked;
+            const restLoc = document.getElementById('restLocation').value;
 
-            if (dutyHours <= 7) baseRestHours = 10;
-            else if (dutyHours <= 8) baseRestHours = 12;
-            else if (dutyHours <= 9) baseRestHours = 13;
-            else if (dutyHours <= 10) baseRestHours = 14;
-            else if (dutyHours <= 12) baseRestHours = 15;
-            else if (dutyHours <= 13) baseRestHours = 16;
-            else if (dutyHours <= 15) baseRestHours = 17;
-            else if (dutyHours <= 16) baseRestHours = 18;
-            else if (dutyHours <= 17) baseRestHours = 19;
-            else if (dutyHours <= 18) baseRestHours = 20;
-            else if (dutyHours <= 19) baseRestHours = 22;
-            else baseRestHours = 24;
+            // 1. Cálculo de Tiempos de Vuelo (TV)
+            let totalTvMin = 0;
+            let totalFlightMin = 0;
+            let firstOutMin = null;
+            let lastInMin = null;
 
-            let baseRestMinutes = baseRestHours * 60;
-            let extraMinutes = 0;
-            let extraLabel = 'Sin adic.';
+            legs.forEach((leg, idx) => {
+                let outM = timeToMin(leg.out);
+                let offM = timeToMin(leg.off);
+                let onM = timeToMin(leg.on);
+                let inM = timeToMin(leg.in);
 
-            if (r.regulation === 'DAN137' && r.shortFlights137) {
-                const add20 = Math.round(baseRestMinutes * 0.2);
-                baseRestMinutes += add20;
-                extraLabel = '+20% (Vuelos cortos)';
-            }
+                if (inM < outM) inM += 1440;
+                if (onM < offM) onM += 1440;
 
-            if (r.regulation === 'DAN135') {
-                // Traslado si PD = 10 horas (135.605(b)(3)(ii))
-                if (baseRestHours === 10) {
-                    const tr = r.restLocation135 === 'BASE' ? 45 : 20;
-                    extraMinutes += tr;
-                    extraLabel = `+00:${tr}m (${r.restLocation135})`;
-                }
-                // Cambio de longitud geográfica (135.605(b)(3)(iii))
-                const longDeg = parseInt(r.longitudeChange135 || '0', 10);
-                if (longDeg >= 45) {
-                    const extraLongMin = 120 + Math.floor((longDeg - 45) / 15) * 30;
-                    extraMinutes += extraLongMin;
-                    extraLabel = `+${formatMinutesToHHMM(extraMinutes)} (Long/Trasl)`;
-                }
-            }
+                const tvMin = Math.max(0, inM - outM);
+                const fltMin = Math.max(0, onM - offM);
 
-            return {
-                baseRestMinutes,
-                extraMinutes,
-                totalFreeMinutes: baseRestMinutes + extraMinutes,
-                extraLabel
-            };
-        }
+                totalTvMin += tvMin;
+                totalFlightMin += fltMin;
 
-        // Evaluación integral de cumplimiento normativo
-        function evaluateRoster(r) {
-            let totalBlockMinutes = 0;
-            let totalAirborneMinutes = 0;
+                const bCell = document.getElementById(`blockTime_${idx}`);
+                const fCell = document.getElementById(`flightTime_${idx}`);
+                if (bCell) bCell.innerText = minToTime(tvMin);
+                if (fCell) fCell.innerText = minToTime(fltMin);
 
-            const evaluatedLegs = r.legs.map(leg => {
-                const blockMin = getDiffMinutesHHMM(leg.offBlock, leg.onBlock);
-                const airMin = getDiffMinutesHHMM(leg.takeoff, leg.landing);
-                totalBlockMinutes += blockMin;
-                totalAirborneMinutes += airMin;
-                return { ...leg, blockMin, airMin };
+                if (firstOutMin === null || outM < firstOutMin) firstOutMin = outM;
+                if (lastInMin === null || inM > lastInMin) lastInMin = inM;
             });
 
-            const startDate = r.psvStart ? new Date(r.psvStart) : new Date();
+            // 2. Cálculo de PS y PSV
+            const psMin = timeToMin(document.getElementById('psTime').value);
+            let psvStartMin = timeToMin(document.getElementById('psvStartTime').value);
+            let psvEndInput = document.getElementById('psvEndTime');
 
-            // Si Fin PSV es automático, tomar el último calzo + 30 min
-            if (r.autoPsvEnd && r.legs.length > 0) {
-                let cursorDate = new Date(startDate.getTime());
-                let lastMinOfDay = cursorDate.getHours() * 60 + cursorDate.getMinutes();
-
-                r.legs.forEach(leg => {
-                    const offM = parseHHMMToMinutes(leg.offBlock);
-                    const onM = parseHHMMToMinutes(leg.onBlock);
-                    if (offM < lastMinOfDay - 120) cursorDate.setDate(cursorDate.getDate() + 1);
-                    cursorDate.setHours(Math.floor(offM / 60), offM % 60, 0, 0);
-                    lastMinOfDay = offM;
-
-                    if (onM < lastMinOfDay) cursorDate.setDate(cursorDate.getDate() + 1);
-                    cursorDate.setHours(Math.floor(onM / 60), onM % 60, 0, 0);
-                    lastMinOfDay = onM;
-                });
-                cursorDate.setMinutes(cursorDate.getMinutes() + 30);
-                const tzOffset = cursorDate.getTimezoneOffset() * 60000;
-                r.psvEnd = new Date(cursorDate.getTime() - tzOffset).toISOString().slice(0, 16);
+            if (document.getElementById('chkAutoFin').checked && lastInMin !== null) {
+                psvEndInput.value = minToTime(lastInMin + 30);
             }
 
-            const endDate = r.psvEnd ? new Date(r.psvEnd) : new Date(startDate.getTime() + 3600000);
-            const psvOnlyMinutes = Math.max(0, Math.round((endDate - startDate) / 60000));
-            const priorPsMinutes = parseHHMMToMinutes(r.priorPs || '00:00');
-            // Según 135.605(b)(1)(viii), PS + PSV no puede exceder los límites de un PSV
-            const totalDutyMinutes = psvOnlyMinutes + priorPsMinutes;
+            let psvEndMin = timeToMin(psvEndInput.value);
+            if (psvEndMin < psvStartMin) psvEndMin += 1440; // Cruce de medianoche
 
-            const nightMinutes = calculateNightMinutes(startDate, endDate);
-            const pctOfNightWindow = Math.min(100, Math.round((nightMinutes / 540) * 100));
-            const pctOfPsvNight = psvOnlyMinutes > 0 ? Math.round((nightMinutes / psvOnlyMinutes) * 100) : 0;
+            const psvDurationMin = Math.max(0, psvEndMin - psvStartMin);
+            const psPlusPsvMin = psMin + psvDurationMin;
 
-            let maxPsvMinutes = 12 * 60;
-            let maxTvMinutes = 8 * 60;
-            let alerts = [];
+            // 3. Ventana nocturna (21:00 a 06:00)
+            const nightPsvMin = getMinutesInNightWindow(psvStartMin, psvEndMin);
+            const psvNightRatio = psvDurationMin > 0 ? (nightPsvMin / psvDurationMin) : 0;
+            const nightWindowRatio = nightPsvMin / 540; // 9 horas de noche = 540 min
+
+            // 4. Determinación de Límites Legales
+            let maxPsvMin = 12 * 60; // 12h estándar
+            let maxTvMin = 8 * 60;   // 8h estándar
+
+            if (norma === '135') {
+                if (crew === 1) {
+                    maxPsvMin = 12 * 60;
+                } else if (crew === 2) {
+                    maxPsvMin = isExt ? (14 * 60) : (12 * 60);
+                } else if (crew === 3) {
+                    maxPsvMin = 18 * 60;
+                }
+            } else if (norma === '137') {
+                maxPsvMin = 12 * 60;
+                maxTvMin = 8 * 60;
+
+                // Reducción obligatoria de 2h si >50% PSV es nocturno o >50% TV es IMC
+                if (psvNightRatio > 0.50 || isIMC) {
+                    maxPsvMin = 10 * 60;
+                    maxTvMin = 6 * 60;
+                }
+            }
+
+            // 5. Tabla de Período de Descanso (PD)
+            const psvHoursCeil = Math.ceil(psvDurationMin / 60);
+            let basePdMin = 10 * 60; // Mínimo absoluto (<= 7h)
+
+            if (psvHoursCeil <= 7) basePdMin = 10 * 60;
+            else if (psvHoursCeil === 8) basePdMin = 12 * 60;
+            else if (psvHoursCeil === 9) basePdMin = 13 * 60;
+            else if (psvHoursCeil === 10) basePdMin = 14 * 60;
+            else if (psvHoursCeil === 11 || psvHoursCeil === 12) basePdMin = 15 * 60;
+            else if (psvHoursCeil === 13) basePdMin = 16 * 60;
+            else if (psvHoursCeil === 14 || psvHoursCeil === 15) basePdMin = 17 * 60;
+            else if (psvHoursCeil === 16) basePdMin = 18 * 60;
+            else if (psvHoursCeil === 17) basePdMin = 19 * 60;
+            else if (psvHoursCeil === 18) basePdMin = 20 * 60;
+            else if (psvHoursCeil === 19) basePdMin = 22 * 60;
+            else basePdMin = 24 * 60;
+
+            // Traslado en base principal (+45m) o posta (+20m) si el descanso es el mínimo (10h)
+            let trasladoMin = 0;
+            if (psvHoursCeil <= 7 && norma === '135') {
+                trasladoMin = (restLoc === 'base') ? 45 : 20;
+            }
+            const totalPdMin = basePdMin + trasladoMin;
+
+            // 6. Alertas y Violaciones Normativas
+            let violations = [];
             let warnings = [];
-            let statusLevel = 'NORMAL';
 
-            if (r.regulation === 'DAN135') {
-                if (r.crewType === '1') {
-                    maxPsvMinutes = 12 * 60;
-                    maxTvMinutes = 8 * 60;
-                    if (r.flightRules === 'IFR') {
-                        alerts.push('DAN 135.601(a)(6): Operaciones de transporte de pasajeros bajo reglas IFR exigen 2 pilotos.');
-                    }
-                } else if (r.crewType === '2') {
-                    maxTvMinutes = 8 * 60;
-                    if (r.extensionReason135 !== 'NONE') {
-                        maxPsvMinutes = 14 * 60;
-                        warnings.push(`EXTENSIÓN PSV (+2h hasta 14:00h) aplicada por ${r.extensionReason135}. Requiere firma del Comandante en Acta (135.605(b)(1)(vii)).`);
-                    } else {
-                        maxPsvMinutes = 12 * 60;
-                    }
-                } else if (r.crewType === '3') {
-                    maxPsvMinutes = 18 * 60;
-                    maxTvMinutes = 12 * 60;
-                    warnings.push('Tripulación Reforzada (3 pilotos): Ningún piloto puede superar 8:00h en los controles y requiere facilidad de descanso a bordo.');
-                }
-
-                // Regla Nocturna DAN 135.605(b)(1)(iv): >50% del Período Nocturno (más de 4h 30m = 270 min entre 21:00 y 06:00)
-                if (nightMinutes > 270) {
-                    if (r.prevNight135) {
-                        alerts.push('INFRACCIÓN DAN 135.605(b)(1)(iv): 2° PSV nocturno consecutivo excede el 50% del Período Nocturno (supera 04:30 hrs entre 21:00 y 06:00).');
-                    } else {
-                        warnings.push('PSV abarca >50% del Período Nocturno (>04:30h): Si realiza un 2° PSV nocturno consecutivo mañana, no podrá exceder 04:30h nocturnas.');
-                    }
-                }
-            } else {
-                // Reglas DAN 137 (Trabajos Aéreos)
-                maxPsvMinutes = 12 * 60;
-                maxTvMinutes = 8 * 60;
-
-                // Verificación de 2 pilotos obligatorios en DAN 137 Enmienda 1 (Abril 2026)
-                if (r.crewType === '1') {
-                    if (r.operationSubType === 'MEDEVAC_BIMOTOR') {
-                        alerts.push('INFRACCIÓN DAN 137.1001(g) / 137.1201(g): Operaciones de Ambulancia Aérea o Rescate en aviones bimotores (VFR o IFR) exigen 2 pilotos habilitados.');
-                    } else if (r.flightRules === 'IFR' || r.flightRules === 'VFR_NOCHE') {
-                        warnings.push('DAN 137.105(d): Toda operación en VFR Nocturno o IFR (excepto helicópteros) debe efectuarse con 2 pilotos.');
-                    }
-                }
-
-                // Reducción de 2 horas por >50% PSV nocturno o >50% TV en IMC (DAN 137.145(c)(3))
-                const isMoreThanHalfPsvNight = psvOnlyMinutes > 0 && (nightMinutes / psvOnlyMinutes) > 0.5;
-                if (isMoreThanHalfPsvNight || r.imc137) {
-                    maxPsvMinutes -= 120; // 10:00 hrs
-                    maxTvMinutes -= 120;  // 06:00 hrs
-                    const motivo = isMoreThanHalfPsvNight && r.imc137 ? '>50% PSV Nocturno + IMC' : (isMoreThanHalfPsvNight ? '>50% PSV en Período Nocturno' : '>50% TV en IMC');
-                    warnings.push(`REDUCCIÓN DAN 137.145(c)(3) ACTIVA (${motivo}): Límites reducidos en 2 horas (PSV Máx: 10:00h / TV Máx: 06:00h).`);
-                }
-
-                if (r.highAlt137) {
-                    maxTvMinutes -= 120;
-                    warnings.push('DAN 137.145(c)(6): Operación en altura ≥ 10.000 ft reduce el Tiempo de Vuelo máximo en 2 horas.');
-                }
-
-                if (r.shortFlights137) {
-                    maxPsvMinutes = Math.round(maxPsvMinutes * 1.2);
-                    if (totalBlockMinutes > 360) {
-                        alerts.push('INFRACCIÓN DAN 137.145(c)(4)(ii): El +20% de PSV para vuelos cortos solo rige si el Tiempo de Vuelo no supera 06:00 horas.');
-                    } else {
-                        warnings.push('Regla Vuelos Cortos (+20% PSV) aplicada: El Período de Descanso aumenta proporcionalmente en +20%.');
-                    }
-                }
+            if (psPlusPsvMin > maxPsvMin) {
+                const diff = psPlusPsvMin - maxPsvMin;
+                violations.push(`EXCESO DE PSV: Excedido en ${minToTime(diff)} hrs.`);
             }
 
-            // Verificar excesos sobre límites
-            if (totalDutyMinutes > maxPsvMinutes) {
-                const exc = formatMinutesToHHMM(totalDutyMinutes - maxPsvMinutes);
-                alerts.push(`EXCESO DE PSV (+${exc} hrs sobre tope de ${formatMinutesToHHMM(maxPsvMinutes)}): Obligación de remitir informe a DGAC.`);
-            } else if (maxPsvMinutes - totalDutyMinutes <= 45 && totalDutyMinutes > 0) {
-                warnings.push(`MARGEN CRÍTICO PSV: Restan solo ${formatMinutesToHHMM(maxPsvMinutes - totalDutyMinutes)} hrs para el límite reglamentario.`);
+            if (totalTvMin > maxTvMin) {
+                const diff = totalTvMin - maxTvMin;
+                violations.push(`EXCESO DE TV: Excedido en ${minToTime(diff)} hrs.`);
             }
 
-            if (totalBlockMinutes > maxTvMinutes) {
-                const excTv = formatMinutesToHHMM(totalBlockMinutes - maxTvMinutes);
-                alerts.push(`EXCESO DE TIEMPO DE VUELO (+${excTv} hrs sobre tope de ${formatMinutesToHHMM(maxTvMinutes)}).`);
-            } else if (maxTvMinutes - totalBlockMinutes <= 30 && totalBlockMinutes > 0) {
-                warnings.push(`MARGEN CRÍTICO TV: Restan solo ${formatMinutesToHHMM(maxTvMinutes - totalBlockMinutes)} hrs disponibles de Tiempo de Vuelo.`);
+            if (norma === '135' && prevNight && nightWindowRatio > 0.50) {
+                violations.push(`VIOLACIÓN NOCTURNA: Segunda noche consecutiva excede el 50% de la noche (${minToTime(nightPsvMin)} hrs).`);
             }
 
-            if (alerts.length > 0) statusLevel = 'DANGER';
-            else if (warnings.length > 0) statusLevel = 'WARNING';
-
-            const restData = calculateRestRequirements(totalDutyMinutes, r);
-            const nextReportDate = new Date(endDate.getTime() + restData.totalFreeMinutes * 60000);
-            const maxLegalEndDate = new Date(startDate.getTime() + (maxPsvMinutes - priorPsMinutes) * 60000);
-
-            return {
-                psvOnlyMinutes,
-                priorPsMinutes,
-                totalDutyMinutes,
-                maxPsvMinutes,
-                totalBlockMinutes,
-                totalAirborneMinutes,
-                maxTvMinutes,
-                nightMinutes,
-                pctOfNightWindow,
-                pctOfPsvNight,
-                restData,
-                startDate,
-                endDate,
-                nextReportDate,
-                maxLegalEndDate,
-                evaluatedLegs,
-                alerts,
-                warnings,
-                statusLevel
-            };
-        }
-
-        function getCurrentRoster() {
-            return rosters.find(x => x.id === currentRosterId) || rosters[0];
-        }
-
-        function selectRoster(id) {
-            currentRosterId = id;
-            loadRosterIntoForm();
-            renderAll();
-        }
-
-        function loadRosterIntoForm() {
-            const r = getCurrentRoster();
-            document.getElementById('inputRegulation').value = r.regulation;
-            document.getElementById('inputOperationSubType').value = r.operationSubType || 'PAX_COM';
-
-            const optCrew3 = document.getElementById('optCrew3');
-            if (r.regulation === 'DAN137') {
-                optCrew3.disabled = true;
-                if (r.crewType === '3') r.crewType = '2';
-            } else {
-                optCrew3.disabled = false;
+            if (isExt && crew === 1) {
+                violations.push(`INFRACCIÓN: Single Pilot no admite extensión de PSV.`);
             }
 
-            document.getElementById('inputCrewType').value = r.crewType;
-            document.getElementById('inputTailNumber').value = r.tailNumber;
-            document.getElementById('inputMissionName').value = r.missionName;
-            document.getElementById('inputFlightRules').value = r.flightRules;
-            document.getElementById('inputPicName').value = r.picName;
-            document.getElementById('inputSicName').value = r.sicName;
-            document.getElementById('inputReliefName').value = r.reliefName || '';
-
-            document.getElementById('inputPriorPs').value = r.priorPs || '00:00';
-            document.getElementById('inputPsvStart').value = r.psvStart;
-            document.getElementById('inputPsvEnd').value = r.psvEnd;
-            document.getElementById('chkAutoPsvEnd').checked = r.autoPsvEnd;
-            document.getElementById('inputPsvEnd').disabled = r.autoPsvEnd;
-
-            document.getElementById('chkPrevNight135').checked = r.prevNight135;
-            document.getElementById('selExtensionReason135').value = r.extensionReason135 || 'NONE';
-            document.getElementById('selExtensionReason135').disabled = r.crewType !== '2';
-            document.getElementById('selRestLocation135').value = r.restLocation135 || 'BASE';
-            document.getElementById('selLongitudeChange135').value = r.longitudeChange135 || '0';
-
-            document.getElementById('chkImc137').checked = r.imc137;
-            document.getElementById('chkHighAlt137').checked = r.highAlt137;
-            document.getElementById('chkShortFlights137').checked = r.shortFlights137;
-
-            document.getElementById('containerSic').style.display = r.crewType === '1' ? 'none' : 'block';
-            document.getElementById('containerRelief').style.display = r.crewType === '3' ? 'block' : 'none';
-
-            document.getElementById('optionsDAN135').classList.toggle('hidden', r.regulation !== 'DAN135');
-            document.getElementById('optionsDAN137').classList.toggle('hidden', r.regulation !== 'DAN137');
-        }
-
-        function handleFormChange() {
-            const r = getCurrentRoster();
-            r.regulation = document.getElementById('inputRegulation').value;
-            r.operationSubType = document.getElementById('inputOperationSubType').value;
-            r.crewType = document.getElementById('inputCrewType').value;
-            r.tailNumber = document.getElementById('inputTailNumber').value.toUpperCase();
-            r.missionName = document.getElementById('inputMissionName').value;
-            r.flightRules = document.getElementById('inputFlightRules').value;
-            r.picName = document.getElementById('inputPicName').value;
-            r.sicName = document.getElementById('inputSicName').value;
-            r.reliefName = document.getElementById('inputReliefName').value;
-
-            r.priorPs = document.getElementById('inputPriorPs').value || '00:00';
-            r.psvStart = document.getElementById('inputPsvStart').value;
-            r.autoPsvEnd = document.getElementById('chkAutoPsvEnd').checked;
-            if (!r.autoPsvEnd) {
-                r.psvEnd = document.getElementById('inputPsvEnd').value;
-            }
-
-            r.prevNight135 = document.getElementById('chkPrevNight135').checked;
-            r.extensionReason135 = r.crewType === '2' ? document.getElementById('selExtensionReason135').value : 'NONE';
-            r.restLocation135 = document.getElementById('selRestLocation135').value;
-            r.longitudeChange135 = document.getElementById('selLongitudeChange135').value;
-
-            r.imc137 = document.getElementById('chkImc137').checked;
-            r.highAlt137 = document.getElementById('chkHighAlt137').checked;
-            r.shortFlights137 = document.getElementById('chkShortFlights137').checked;
-
-            loadRosterIntoForm();
-            renderAll();
-        }
-
-        function renderRosterList() {
-            const container = document.getElementById('rosterList');
-            container.innerHTML = '';
-
-            rosters.forEach(r => {
-                const ev = evaluateRoster(r);
-                const isSelected = r.id === currentRosterId;
-
-                let statusClass = 'status-ok';
-                let statusText = 'DENTRO LÍMITE';
-                if (ev.statusLevel === 'WARNING') {
-                    statusClass = 'status-warn';
-                    statusText = 'CONDICIÓN ESP.';
-                } else if (ev.statusLevel === 'DANGER') {
-                    statusClass = 'status-err';
-                    statusText = 'EXCEDIDO';
-                }
-
-                const item = document.createElement('div');
-                item.onclick = () => selectRoster(r.id);
-                item.className = `p-2 border cursor-pointer transition-none`;
-                item.style.backgroundColor = isSelected ? 'var(--bg-surface)' : 'var(--bg-panel)';
-                item.style.borderColor = isSelected ? 'var(--accent-primary)' : 'var(--border-subtle)';
-                if (isSelected) item.style.borderLeftWidth = '4px';
-
-                item.innerHTML = `
-                    <div class="flex items-center justify-between mb-1">
-                        <span class="font-mono-tech font-bold text-xs">${r.tailNumber || 'S/M'} <span class="font-normal opacity-75">(${r.regulation})</span></span>
-                        <span class="font-mono-tech text-[9.5px] font-bold px-1.5 py-0.5 ${statusClass}">${statusText}</span>
-                    </div>
-                    <div class="text-xs font-bold truncate">${r.missionName || 'Sin descripción'}</div>
-                    <div class="text-[11px] truncate" style="color: var(--text-muted);">${r.picName}${r.crewType !== '1' ? ' / ' + r.sicName : ''}</div>
-                    <div class="mt-1.5 pt-1 border-t flex justify-between font-mono-tech text-[10.5px]" style="border-color: var(--border-subtle);">
-                        <span>PSV: <strong>${formatMinutesToHHMM(ev.totalDutyMinutes)}</strong>/${formatMinutesToHHMM(ev.maxPsvMinutes)}</span>
-                        <span>TV: <strong>${formatMinutesToHHMM(ev.totalBlockMinutes)}</strong>/${formatMinutesToHHMM(ev.maxTvMinutes)}</span>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
-        }
-
-        function renderLegsTable(r, ev) {
-            const tbody = document.getElementById('legsTableBody');
-            tbody.innerHTML = '';
-
-            ev.evaluatedLegs.forEach((leg, idx) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="text-center font-bold">${idx + 1}</td>
-                    <td><input type="text" value="${leg.origin}" oninput="updateLeg(${idx}, 'origin', this.value.toUpperCase())" maxlength="4" class="tech-input font-mono-tech uppercase text-center font-bold" style="height:24px;"></td>
-                    <td><input type="text" value="${leg.dest}" oninput="updateLeg(${idx}, 'dest', this.value.toUpperCase())" maxlength="4" class="tech-input font-mono-tech uppercase text-center font-bold" style="height:24px;"></td>
-                    <td><input type="time" value="${leg.offBlock}" onchange="updateLeg(${idx}, 'offBlock', this.value)" class="tech-input font-mono-tech" style="height:24px;"></td>
-                    <td><input type="time" value="${leg.takeoff}" onchange="updateLeg(${idx}, 'takeoff', this.value)" class="tech-input font-mono-tech" style="height:24px;"></td>
-                    <td><input type="time" value="${leg.landing}" onchange="updateLeg(${idx}, 'landing', this.value)" class="tech-input font-mono-tech" style="height:24px;"></td>
-                    <td><input type="time" value="${leg.onBlock}" onchange="updateLeg(${idx}, 'onBlock', this.value)" class="tech-input font-mono-tech" style="height:24px;"></td>
-                    <td>
-                        <select onchange="updateLeg(${idx}, 'pf', this.value)" class="tech-select font-mono-tech text-xs" style="height:24px; padding: 2px 4px;">
-                            <option value="PIC" ${leg.pf === 'PIC' ? 'selected' : ''}>PIC (Comandante)</option>
-                            <option value="SIC" ${leg.pf === 'SIC' ? 'selected' : ''}>SIC (Copiloto)</option>
-                        </select>
-                    </td>
-                    <td class="text-right">${formatMinutesToHHMM(leg.airMin)}</td>
-                    <td class="text-right font-bold" style="color: var(--accent-primary);">${formatMinutesToHHMM(leg.blockMin)}</td>
-                    <td class="text-center">
-                        <button onclick="removeFlightLeg(${idx})" class="px-1.5 py-0.5 text-red-600 hover:bg-red-100 font-bold">X</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            document.getElementById('tableTotalAirborne').textContent = formatMinutesToHHMM(ev.totalAirborneMinutes);
-            document.getElementById('tableTotalBlock').textContent = formatMinutesToHHMM(ev.totalBlockMinutes);
-        }
-
-        function renderTimeline(ev) {
-            const container = document.getElementById('timelineContainer');
-            const labelsContainer = document.getElementById('timelineLabels');
-            container.innerHTML = '';
-            labelsContainer.innerHTML = '';
-
-            const baseDate = new Date(ev.startDate.getTime());
-            baseDate.setMinutes(0, 0, 0);
-            baseDate.setHours(baseDate.getHours() - 1);
-            const totalWindowMinutes = 24 * 60;
-
-            // 1. Franja Nocturna (21:00 a 06:00)
-            for (let m = 0; m < totalWindowMinutes; m += 15) {
-                const d = new Date(baseDate.getTime() + m * 60000);
-                const h = d.getHours();
-                if (h >= 21 || h < 6) {
-                    const block = document.createElement('div');
-                    block.className = 'absolute top-0 bottom-0 night-band-hatch border-r';
-                    block.style.borderColor = 'var(--border-subtle)';
-                    block.style.left = `${(m / totalWindowMinutes) * 100}%`;
-                    block.style.width = `${(15 / totalWindowMinutes) * 100}%`;
-                    container.appendChild(block);
-                }
-            }
-
-            // 2. Bloque de PSV
-            const psvStartOffset = Math.max(0, (ev.startDate - baseDate) / 60000);
-            const psvWidth = Math.min(totalWindowMinutes - psvStartOffset, ev.psvOnlyMinutes);
-            const psvBar = document.createElement('div');
-            psvBar.className = `absolute top-1.5 bottom-1.5 border flex items-center px-1.5 text-[10px] font-mono-tech font-bold z-10 overflow-hidden`;
-            psvBar.style.backgroundColor = ev.totalDutyMinutes > ev.maxPsvMinutes ? 'var(--status-err-bg)' : 'var(--status-ok-bg)';
-            psvBar.style.borderColor = ev.totalDutyMinutes > ev.maxPsvMinutes ? 'var(--status-err-border)' : 'var(--status-ok-border)';
-            psvBar.style.color = ev.totalDutyMinutes > ev.maxPsvMinutes ? 'var(--status-err-text)' : 'var(--status-ok-text)';
-            psvBar.style.left = `${(psvStartOffset / totalWindowMinutes) * 100}%`;
-            psvBar.style.width = `${Math.max(1, (psvWidth / totalWindowMinutes) * 100)}%`;
-            psvBar.innerHTML = `<span>PSV ${formatMinutesToHHMM(ev.psvOnlyMinutes)}</span>`;
-            container.appendChild(psvBar);
-
-            // 3. Línea vertical de Tope Máximo Legal de PSV
-            const maxOffset = psvStartOffset + (ev.maxPsvMinutes - ev.priorPsMinutes);
-            if (maxOffset >= 0 && maxOffset <= totalWindowMinutes) {
-                const limitLine = document.createElement('div');
-                limitLine.className = 'absolute top-0 bottom-0 w-0.5 bg-red-600 z-30';
-                limitLine.style.left = `${(maxOffset / totalWindowMinutes) * 100}%`;
-                limitLine.title = `Tope Máximo PSV: ${formatMinutesToHHMM(ev.maxPsvMinutes)}`;
-                container.appendChild(limitLine);
-            }
-
-            // 4. Bloques de Tramos de Vuelo (TV)
-            let legCursorDate = new Date(ev.startDate.getTime());
-            let lastMin = legCursorDate.getHours() * 60 + legCursorDate.getMinutes();
-
-            ev.evaluatedLegs.forEach(leg => {
-                const offM = parseHHMMToMinutes(leg.offBlock);
-                if (offM < lastMin - 120) legCursorDate.setDate(legCursorDate.getDate() + 1);
-                legCursorDate.setHours(Math.floor(offM / 60), offM % 60, 0, 0);
-                lastMin = offM;
-
-                const legOffset = (legCursorDate - baseDate) / 60000;
-                if (legOffset >= 0 && legOffset < totalWindowMinutes) {
-                    const legEl = document.createElement('div');
-                    legEl.className = 'absolute top-3 bottom-3 z-20 flex items-center justify-center text-[9.5px] font-mono-tech font-bold text-white overflow-hidden px-1';
-                    legEl.style.backgroundColor = 'var(--accent-primary)';
-                    legEl.style.left = `${(legOffset / totalWindowMinutes) * 100}%`;
-                    legEl.style.width = `${Math.max(1.5, (leg.blockMin / totalWindowMinutes) * 100)}%`;
-                    legEl.title = `${leg.origin}-${leg.dest} (${leg.offBlock} a ${leg.onBlock})`;
-                    legEl.textContent = `${leg.origin}-${leg.dest}`;
-                    container.appendChild(legEl);
-                }
-            });
-
-            // 5. Escala de 24 horas
-            for (let h = 0; h <= 24; h += 2) {
-                const labelDate = new Date(baseDate.getTime() + h * 3600000);
-                const span = document.createElement('span');
-                span.textContent = `${String(labelDate.getHours()).padStart(2, '0')}:00`;
-                labelsContainer.appendChild(span);
-            }
-        }
-
-        function renderAll() {
-            const r = getCurrentRoster();
-            const ev = evaluateRoster(r);
-
-            if (r.autoPsvEnd) {
-                document.getElementById('inputPsvEnd').value = r.psvEnd;
-            }
-
-            const pad = (n) => String(n).padStart(2, '0');
-            const fmtDateTime = (d) => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())} HL`;
-            const fmtTimeOnly = (d) => `${pad(d.getHours())}:${pad(d.getMinutes())} HL`;
-
-            // 1. Actualizar Banda de Dictamen Superior
-            const banner = document.getElementById('auditBanner');
-            if (ev.statusLevel === 'DANGER') {
-                banner.className = 'p-2.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 status-err';
-                banner.innerHTML = `
-                    <div>
-                        <div class="font-bold text-xs uppercase"><i class="fa-solid fa-triangle-exclamation mr-1"></i> DICTAMEN EOV: EXCESO O INCUMPLIMIENTO REGLAMENTARIO DETECTADO</div>
-                        <ul class="text-xs list-disc list-inside mt-1 space-y-0.5 font-medium">
-                            ${ev.alerts.map(a => `<li>${a}</li>`).join('')}
-                            ${ev.warnings.map(w => `<li>${w}</li>`).join('')}
-                        </ul>
-                    </div>
-                    <div class="font-mono-tech font-bold text-xs px-2.5 py-1 border border-current shrink-0">ESTADO: EXCEDIDO / NO APTO</div>
-                `;
-            } else if (ev.statusLevel === 'WARNING') {
-                banner.className = 'p-2.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 status-warn';
-                banner.innerHTML = `
-                    <div>
-                        <div class="font-bold text-xs uppercase"><i class="fa-solid fa-circle-exclamation mr-1"></i> DICTAMEN EOV: OPERACIÓN CON CONDICIÓN ESPECIAL / EXTENSIÓN / REDUCCIÓN NOCTURNA</div>
-                        <ul class="text-xs list-disc list-inside mt-1 space-y-0.5 font-medium">
-                            ${ev.warnings.map(w => `<li>${w}</li>`).join('')}
-                        </ul>
-                    </div>
-                    <div class="font-mono-tech font-bold text-xs px-2.5 py-1 border border-current shrink-0">ESTADO: CONDICIÓN ESPECIAL</div>
-                `;
-            } else {
-                banner.className = 'p-2.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 status-ok';
-                banner.innerHTML = `
-                    <div>
-                        <div class="font-bold text-xs uppercase"><i class="fa-solid fa-check mr-1"></i> DICTAMEN EOV: PROGRAMACIÓN CONFORME A NORMATIVA (${r.regulation})</div>
-                        <div class="text-xs mt-0.5">La serie de vuelos de la aeronave <strong>${r.tailNumber}</strong> cumple íntegramente los límites de PSV, Tiempo de Vuelo, Período Nocturno y Descanso.</div>
-                    </div>
-                    <div class="font-mono-tech font-bold text-xs px-2.5 py-1 border border-current shrink-0">ESTADO: APTO DESPACHO</div>
-                `;
-            }
-
-            // 2. Actualizar Cajas de Lectura Numérica
-            document.getElementById('kpiPsvLimitTag').textContent = `MÁX ${formatMinutesToHHMM(ev.maxPsvMinutes)}`;
-            document.getElementById('kpiPsvValue').textContent = formatMinutesToHHMM(ev.totalDutyMinutes);
-            const psvRem = ev.maxPsvMinutes - ev.totalDutyMinutes;
-            document.getElementById('kpiPsvMargin').textContent = psvRem >= 0 ? `${formatMinutesToHHMM(psvRem)} disp.` : `EXCESO +${formatMinutesToHHMM(Math.abs(psvRem))}`;
-            document.getElementById('kpiPsvBar').style.width = `${Math.min(100, Math.round((ev.totalDutyMinutes / ev.maxPsvMinutes) * 100))}%`;
-            document.getElementById('kpiMaxLegalHour').textContent = fmtTimeOnly(ev.maxLegalEndDate);
-
-            document.getElementById('kpiTvLimitTag').textContent = `MÁX ${formatMinutesToHHMM(ev.maxTvMinutes)}`;
-            document.getElementById('kpiTvValue').textContent = formatMinutesToHHMM(ev.totalBlockMinutes);
-            const tvRem = ev.maxTvMinutes - ev.totalBlockMinutes;
-            document.getElementById('kpiTvMargin').textContent = tvRem >= 0 ? `${formatMinutesToHHMM(tvRem)} disp.` : `EXCESO +${formatMinutesToHHMM(Math.abs(tvRem))}`;
-            document.getElementById('kpiTvBar').style.width = `${Math.min(100, Math.round((ev.totalBlockMinutes / ev.maxTvMinutes) * 100))}%`;
-            document.getElementById('kpiAirborneTotal').textContent = `${formatMinutesToHHMM(ev.totalAirborneMinutes)} hrs`;
-
-            document.getElementById('kpiNightValue').textContent = formatMinutesToHHMM(ev.nightMinutes);
-            document.getElementById('kpiNightPctWindow').textContent = `${ev.pctOfNightWindow}%`;
-            document.getElementById('kpiNightPctPsv').textContent = `${ev.pctOfPsvNight}%`;
-            document.getElementById('kpiNightBar').style.width = `${ev.pctOfNightWindow}%`;
-            document.getElementById('kpiNightRuleBadge').textContent = ev.nightMinutes > 270 ? '>50% NOCHE' : (ev.nightMinutes > 0 ? 'PARCIAL NOCHE' : 'DIURNO');
-            document.getElementById('kpiNightThresholdText').textContent = r.regulation === 'DAN135' ? 'Tope 2° Noche: 04:30h' : (ev.pctOfPsvNight > 50 ? 'Castigo -2h Aplicado' : 'Sin castigo (<50% PSV)');
-
-            document.getElementById('kpiPdValue').textContent = formatMinutesToHHMM(ev.restData.baseRestMinutes);
-            document.getElementById('kpiPdExtra').textContent = ev.restData.extraLabel;
-            document.getElementById('kpiNextReportTime').textContent = fmtDateTime(ev.nextReportDate);
-
-            // 3. Tabla de auditoría en Panel 2
-            document.getElementById('auditPsPlusPsv').textContent = `${formatMinutesToHHMM(ev.priorPsMinutes)} + ${formatMinutesToHHMM(ev.psvOnlyMinutes)} = ${formatMinutesToHHMM(ev.totalDutyMinutes)}`;
-            document.getElementById('auditMaxReleaseTime').textContent = fmtDateTime(ev.maxLegalEndDate);
-            document.getElementById('auditNightBreakdown').textContent = `${formatMinutesToHHMM(ev.nightMinutes)} hrs (${ev.pctOfNightWindow}% de 9h | ${ev.pctOfPsvNight}% del PSV)`;
+            // 7. Actualización de Interfaz
+            document.getElementById('resPSTotal').innerText = `${minToTime(psMin)} (PS) + ${minToTime(psvDurationMin)} (PSV) = ${minToTime(psPlusPsvMin)} hrs`;
+            document.getElementById('resPSVLimit').innerText = `${minToTime(maxPsvMin)} hrs ${isExt ? '(Con Extensión +2h)' : ''}`;
             
-            const excCell = document.getElementById('auditExcessCell');
-            if (psvRem < 0) {
-                excCell.textContent = `+${formatMinutesToHHMM(Math.abs(psvRem))} hrs (EXCESO PSV)`;
-                excCell.style.color = 'var(--status-err-text)';
-            } else if (tvRem < 0) {
-                excCell.textContent = `+${formatMinutesToHHMM(Math.abs(tvRem))} hrs (EXCESO TV)`;
-                excCell.style.color = 'var(--status-err-text)';
+            const topeLegalMin = psvStartMin + maxPsvMin;
+            document.getElementById('resTopeHora').innerText = `${minToTime(topeLegalMin)} HL`;
+
+            document.getElementById('resTVTotal').innerText = `${minToTime(totalTvMin)} hrs (Neto vuelo: ${minToTime(totalFlightMin)} hrs)`;
+            document.getElementById('resTVLimit').innerText = `${minToTime(maxTvMin)} hrs`;
+
+            document.getElementById('resNightOps').innerText = `${minToTime(nightPsvMin)} hrs (${Math.round(psvNightRatio * 100)}% del PSV | ${Math.round(nightWindowRatio * 100)}% de la Noche)`;
+
+            document.getElementById('resPDRequerido').innerText = `${minToTime(basePdMin)} hrs ${trasladoMin > 0 ? `+ ${trasladoMin}m traslado` : ''} = ${minToTime(totalPdMin)} hrs`;
+
+            const nextPresMin = psvEndMin + totalPdMin;
+            document.getElementById('resProximaPresentacion').innerText = `${minToTime(nextPresMin)} HL`;
+
+            const badgeCell = document.getElementById('resStatusBadge');
+            if (violations.length > 0) {
+                badgeCell.innerHTML = `<span class="status-badge status-err">NO CUMPLE // ${violations.join(' | ')}</span>`;
+            } else if (warnings.length > 0) {
+                badgeCell.innerHTML = `<span class="status-badge status-warn">ALERTA // ${warnings.join(' | ')}</span>`;
             } else {
-                excCell.textContent = '00:00 (DENTRO DE LÍMITE)';
-                excCell.style.color = 'var(--status-ok-text)';
+                badgeCell.innerHTML = `<span class="status-badge status-ok">CONFORME A NORMA DGAC</span>`;
             }
 
-            renderLegsTable(r, ev);
-            renderTimeline(ev);
-            renderRosterList();
+            // Actualizar firmas en impresión
+            document.getElementById('sigPicName').innerText = (document.getElementById('picName').value || 'PILOTO AL MANDO').toUpperCase();
+
+            // Dibujar Timeline
+            renderTimeline(psvStartMin, psvEndMin);
         }
 
-        // Gestión de Tramos y Turnos
-        function updateLeg(index, field, value) {
-            const r = getCurrentRoster();
-            if (!r.legs[index]) return;
-            r.legs[index][field] = value;
-            renderAll();
-        }
+        function renderTimeline(psvStart, psvEnd) {
+            const tlPsv = document.getElementById('tlPsv');
+            const tlFlights = document.getElementById('tlFlights');
+            tlFlights.innerHTML = '';
 
-        function addFlightLeg() {
-            const r = getCurrentRoster();
-            let nextOrigin = 'SCEL';
-            let nextOff = '10:00', nextTo = '10:10', nextLdg = '11:10', nextOn = '11:20';
+            const leftPsv = (psvStart / 1440) * 100;
+            const widthPsv = ((psvEnd - psvStart) / 1440) * 100;
+            tlPsv.style.left = `${leftPsv}%`;
+            tlPsv.style.width = `${widthPsv}%`;
 
-            if (r.legs.length > 0) {
-                const last = r.legs[r.legs.length - 1];
-                nextOrigin = last.dest || 'SCEL';
-                const lastOnMin = parseHHMMToMinutes(last.onBlock);
-                const nOff = (lastOnMin + 40) % 1440;
-                const nTo = (nOff + 10) % 1440;
-                const nLdg = (nTo + 60) % 1440;
-                const nOn = (nLdg + 10) % 1440;
-                nextOff = formatMinutesToHHMM(nOff);
-                nextTo = formatMinutesToHHMM(nTo);
-                nextLdg = formatMinutesToHHMM(nLdg);
-                nextOn = formatMinutesToHHMM(nOn);
-            }
+            legs.forEach(leg => {
+                let outM = timeToMin(leg.out);
+                let inM = timeToMin(leg.in);
+                if (inM < outM) inM += 1440;
 
-            r.legs.push({
-                id: 'leg-' + Date.now(),
-                origin: nextOrigin,
-                dest: 'SCTE',
-                offBlock: nextOff,
-                takeoff: nextTo,
-                landing: nextLdg,
-                onBlock: nextOn,
-                pf: r.legs.length % 2 === 0 ? 'PIC' : 'SIC'
+                const flLeft = (outM / 1440) * 100;
+                const flWidth = ((inM - outM) / 1440) * 100;
+
+                const flDiv = document.createElement('div');
+                flDiv.className = 'flight-block';
+                flDiv.style.left = `${flLeft}%`;
+                flDiv.style.width = `${flWidth}%`;
+                flDiv.title = `${leg.origen}-${leg.destino} (${leg.out} - ${leg.in})`;
+                tlFlights.appendChild(flDiv);
             });
-            renderAll();
         }
 
-        function removeFlightLeg(index) {
-            const r = getCurrentRoster();
-            r.legs.splice(index, 1);
-            renderAll();
-        }
+        // Exportación de planilla a CSV
+        function exportCSV() {
+            let csv = "REPORTE DE DESPACHO Y CONTROL PSV - TV - PD\n";
+            csv += `Fecha Operacion: ${document.getElementById('opDate').value}\n`;
+            csv += `Normativa: DAN ${document.getElementById('normaSelect').value}\n`;
+            csv += `Aeronave: ${document.getElementById('acftReg').value}\n`;
+            csv += `PIC: ${document.getElementById('picName').value}\n`;
+            csv += `SIC: ${document.getElementById('sicName').value}\n\n`;
+            csv += "TRAMOS DE VUELO\n";
+            csv += "#,Origen,Destino,Off-Block,Take-Off,Landing,On-Block,PF,TV(Calzos)\n";
 
-        function setReportToFirstLeg(offsetMin) {
-            const r = getCurrentRoster();
-            if (r.legs.length === 0) return;
-            const firstOff = parseHHMMToMinutes(r.legs[0].offBlock);
-            const d = r.psvStart ? new Date(r.psvStart) : new Date();
-            d.setHours(Math.floor(firstOff / 60), firstOff % 60, 0, 0);
-            d.setMinutes(d.getMinutes() + offsetMin);
-            const tzOffset = d.getTimezoneOffset() * 60000;
-            r.psvStart = new Date(d.getTime() - tzOffset).toISOString().slice(0, 16);
-            loadRosterIntoForm();
-            renderAll();
-        }
-
-        function createNewRoster() {
-            const newId = 'r-' + Date.now();
-            rosters.push({
-                id: newId,
-                missionName: `Despacho #${rosters.length + 1}`,
-                tailNumber: 'CC-NEW',
-                regulation: 'DAN135',
-                operationSubType: 'PAX_COM',
-                crewType: '2',
-                flightRules: 'IFR',
-                picName: 'Comandante PIC',
-                sicName: 'Copiloto SIC',
-                reliefName: '',
-                priorPs: '00:00',
-                psvStart: `${todayStr}T08:00`,
-                psvEnd: `${todayStr}T12:00`,
-                autoPsvEnd: true,
-                prevNight135: false,
-                extensionReason135: 'NONE',
-                restLocation135: 'BASE',
-                longitudeChange135: '0',
-                imc137: false,
-                highAlt137: false,
-                shortFlights137: false,
-                legs: [
-                    { id: 'l-new', origin: 'SCEL', dest: 'SCSE', offBlock: '09:00', takeoff: '09:10', landing: '10:05', onBlock: '10:15', pf: 'PIC' }
-                ]
+            legs.forEach((leg, idx) => {
+                let outM = timeToMin(leg.out);
+                let inM = timeToMin(leg.in);
+                if (inM < outM) inM += 1440;
+                csv += `${idx + 1},${leg.origen},${leg.destino},${leg.out},${leg.off},${leg.on},${leg.in},${leg.pf},${minToTime(inM - outM)}\n`;
             });
-            selectRoster(newId);
-        }
 
-        function deleteCurrentRoster() {
-            if (rosters.length <= 1) return;
-            rosters = rosters.filter(x => x.id !== currentRosterId);
-            currentRosterId = rosters[0].id;
-            loadRosterIntoForm();
-            renderAll();
-        }
-
-        // Cambio de Esquema Visual (Oficina / EFB / Papel)
-        function changeVisualTheme(themeName) {
-            document.documentElement.setAttribute('data-theme', themeName);
-        }
-
-        function toggleModal(id) {
-            document.getElementById(id).classList.toggle('hidden');
-        }
-
-        // Exportación a archivo CSV compatible con Microsoft Excel
-        function exportCurrentToCSV() {
-            const r = getCurrentRoster();
-            const ev = evaluateRoster(r);
-
-            let csv = 'Nro Tramo,Matricula,Normativa,Comandante (PIC),Copiloto (SIC),Origen,Destino,Fuera Calzos,Despegue,Aterrizaje,En Calzos,Piloto Controles,Vuelo Real (HH:MM),Tiempo Vuelo Calzos (HH:MM)\n';
-            ev.evaluatedLegs.forEach((l, idx) => {
-                csv += `${idx + 1},${r.tailNumber},${r.regulation},"${r.picName}","${r.sicName}",${l.origin},${l.dest},${l.offBlock},${l.takeoff},${l.landing},${l.onBlock},${l.pf},${formatMinutesToHHMM(l.airMin)},${formatMinutesToHHMM(l.blockMin)}\n`;
-            });
-            csv += `\nRESUMEN DEL TURNO\n`;
-            csv += `Inicio PSV,${r.psvStart.replace('T', ' ')}\n`;
-            csv += `Termino PSV,${r.psvEnd.replace('T', ' ')}\n`;
-            csv += `PSV Total Computado,${formatMinutesToHHMM(ev.totalDutyMinutes)},Maximo Legal,${formatMinutesToHHMM(ev.maxPsvMinutes)}\n`;
-            csv += `Tiempo de Vuelo Total (TV),${formatMinutesToHHMM(ev.totalBlockMinutes)},Maximo Legal,${formatMinutesToHHMM(ev.maxTvMinutes)}\n`;
-            csv += `Tiempo en Periodo Nocturno (21-06),${formatMinutesToHHMM(ev.nightMinutes)},Porcentaje PSV,${ev.pctOfPsvNight}%\n`;
-            csv += `Periodo de Descanso Minimo (PD),${formatMinutesToHHMM(ev.restData.baseRestMinutes)}\n`;
+            csv += `\nRESUMEN LEGAL\n`;
+            csv += `PSV Total,${document.getElementById('resPSTotal').innerText}\n`;
+            csv += `Limite PSV,${document.getElementById('resPSVLimit').innerText}\n`;
+            csv += `Tope Legal Liberacion,${document.getElementById('resTopeHora').innerText}\n`;
+            csv += `TV Total,${document.getElementById('resTVTotal').innerText}\n`;
+            csv += `Limite TV,${document.getElementById('resTVLimit').innerText}\n`;
+            csv += `Descanso Minimo (PD),${document.getElementById('resPDRequerido').innerText}\n`;
 
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Control_PSV_${r.tailNumber}_${todayStr}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `SICO_EOV_${document.getElementById('acftReg').value}_${document.getElementById('opDate').value}.csv`;
+            link.click();
         }
 
-        // Generación del Acta Oficial de Control de PSV / Extensión para Firma
-        function openOfficialActModal() {
-            const r = getCurrentRoster();
-            const ev = evaluateRoster(r);
-            const pad = (n) => String(n).padStart(2, '0');
-            const fmtDate = (d) => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())} HL`;
+        // Eventos reactivos
+        document.getElementById('normaSelect').addEventListener('change', calculateTotals);
+        document.getElementById('crewSelect').addEventListener('change', calculateTotals);
+        document.getElementById('chkIMC').addEventListener('change', calculateTotals);
+        document.getElementById('chkPrevNight').addEventListener('change', calculateTotals);
+        document.getElementById('restLocation').addEventListener('change', calculateTotals);
+        document.getElementById('psTime').addEventListener('change', calculateTotals);
+        document.getElementById('psvStartTime').addEventListener('change', calculateTotals);
+        document.getElementById('psvEndTime').addEventListener('change', calculateTotals);
+        document.getElementById('chkAutoFin').addEventListener('change', calculateTotals);
+        document.getElementById('chkExtension').addEventListener('change', function() {
+            document.getElementById('extReasonRow').style.display = this.checked ? 'flex' : 'none';
+            calculateTotals();
+        });
 
-            const container = document.getElementById('printableActaContent');
-            container.innerHTML = `
-                <div class="border-2 border-black p-4">
-                    <div class="flex justify-between items-start border-b-2 border-black pb-2 mb-3">
-                        <div>
-                            <div class="font-bold text-sm">ACTA DE CONTROL OPERACIONAL DE TIEMPO DE VUELO, PSV Y DESCANSO</div>
-                            <div class="text-[11px]">CUMPLIMIENTO NORMATIVO DGAC CHILE — ${r.regulation === 'DAN135' ? 'DAN 135 VOL. I SECCIÓN 135.605' : 'DAN 137 SECCIÓN 137.145'}</div>
-                        </div>
-                        <div class="text-right text-[11px]">
-                            <div><strong>FECHA EMISIÓN:</strong> ${new Date().toLocaleDateString('es-CL')}</div>
-                            <div><strong>MATRÍCULA:</strong> ${r.tailNumber}</div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2 text-xs mb-3 border-b border-black pb-3">
-                        <div><strong>MISIÓN / VUELO:</strong> ${r.missionName}</div>
-                        <div><strong>REGLA DE VUELO:</strong> ${r.flightRules} (${r.crewType} Pilotos)</div>
-                        <div><strong>COMANDANTE (PIC):</strong> ${r.picName}</div>
-                        <div><strong>COPILOTO (SIC):</strong> ${r.crewType !== '1' ? r.sicName : 'N/A (1 Piloto)'}</div>
-                    </div>
-
-                    <div class="font-bold uppercase text-xs mb-1">1. Detalle de Tramos de Vuelo (Tiempo entre Calzos - TV)</div>
-                    <table class="w-full border-collapse border border-black text-xs mb-3">
-                        <thead>
-                            <tr class="bg-gray-200">
-                                <th class="border border-black p-1 text-center">#</th>
-                                <th class="border border-black p-1">ORIGEN</th>
-                                <th class="border border-black p-1">DESTINO</th>
-                                <th class="border border-black p-1">FUERA CALZOS</th>
-                                <th class="border border-black p-1">DESPEGUE</th>
-                                <th class="border border-black p-1">ATERRIZAJE</th>
-                                <th class="border border-black p-1">EN CALZOS</th>
-                                <th class="border border-black p-1">PF</th>
-                                <th class="border border-black p-1 text-right">TV (CALZOS)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${ev.evaluatedLegs.map((l, i) => `
-                                <tr>
-                                    <td class="border border-black p-1 text-center">${i + 1}</td>
-                                    <td class="border border-black p-1 font-bold">${l.origin}</td>
-                                    <td class="border border-black p-1 font-bold">${l.dest}</td>
-                                    <td class="border border-black p-1">${l.offBlock}</td>
-                                    <td class="border border-black p-1">${l.takeoff}</td>
-                                    <td class="border border-black p-1">${l.landing}</td>
-                                    <td class="border border-black p-1">${l.onBlock}</td>
-                                    <td class="border border-black p-1">${l.pf}</td>
-                                    <td class="border border-black p-1 text-right font-bold">${formatMinutesToHHMM(l.blockMin)}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                        <tfoot>
-                            <tr class="bg-gray-100 font-bold">
-                                <td colspan="8" class="border border-black p-1 text-right">TIEMPO DE VUELO TOTAL (TV) ACUMULADO:</td>
-                                <td class="border border-black p-1 text-right">${formatMinutesToHHMM(ev.totalBlockMinutes)} hrs</td>
-                            </tr>
-                        </tfoot>
-                    </table>
-
-                    <div class="font-bold uppercase text-xs mb-1">2. Liquidación de Período de Servicio de Vuelo (PSV), Noche y Descanso (PD)</div>
-                    <div class="grid grid-cols-2 gap-2 border border-black p-2 mb-3 text-xs">
-                        <div><strong>Presentación (Inicio PSV):</strong> ${fmtDate(ev.startDate)}</div>
-                        <div><strong>Término Funciones (Fin PSV):</strong> ${fmtDate(ev.endDate)}</div>
-                        <div><strong>PSV Total Computado:</strong> ${formatMinutesToHHMM(ev.totalDutyMinutes)} hrs (Límite: ${formatMinutesToHHMM(ev.maxPsvMinutes)} hrs)</div>
-                        <div><strong>Tiempo de Vuelo Total:</strong> ${formatMinutesToHHMM(ev.totalBlockMinutes)} hrs (Límite: ${formatMinutesToHHMM(ev.maxTvMinutes)} hrs)</div>
-                        <div><strong>Exposición Nocturna (21-06):</strong> ${formatMinutesToHHMM(ev.nightMinutes)} hrs (${ev.pctOfPsvNight}% del PSV)</div>
-                        <div><strong>Descanso Mínimo Exigido (PD):</strong> ${formatMinutesToHHMM(ev.restData.baseRestMinutes)} hrs (${ev.restData.extraLabel})</div>
-                        <div class="col-span-2"><strong>Habilitado para Próxima Presentación a partir de:</strong> ${fmtDate(ev.nextReportDate)}</div>
-                    </div>
-
-                    <div class="font-bold uppercase text-xs mb-1">3. Observaciones Reglamentarias / Causal de Extensión (135.605(b)(1)(vii) / 137.145)</div>
-                    <div class="border border-black p-2 mb-6 min-h-[60px] text-xs">
-                        ${ev.alerts.length === 0 && ev.warnings.length === 0 
-                            ? 'Operación ejecutada íntegramente dentro de los límites ordinarios de Tiempo de Vuelo y Período de Servicio de Vuelo.' 
-                            : [...ev.alerts, ...ev.warnings].join(' | ')}
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-8 pt-8 text-center text-xs">
-                        <div class="border-t border-black pt-1">
-                            <strong>FIRMA COMANDANTE DE AERONAVE (PIC)</strong><br>
-                            ${r.picName}
-                        </div>
-                        <div class="border-t border-black pt-1">
-                            <strong>FIRMA ENCARGADO OPERACIONES DE VUELO (EOV)</strong><br>
-                            Despacho Operacional
-                        </div>
-                    </div>
-                </div>
-            `;
-            toggleModal('modalActa');
-        }
-
-        function copyActaText() {
-            const content = document.getElementById('printableActaContent').innerText;
-            const temp = document.createElement('textarea');
-            temp.value = content;
-            document.body.appendChild(temp);
-            temp.select();
-            document.execCommand('copy');
-            document.body.removeChild(temp);
-        }
-
-        function updateClocks() {
-            const now = new Date();
-            document.getElementById('clockLocal').textContent = now.toLocaleTimeString('es-CL', { hour12: false });
-            const utcH = String(now.getUTCHours()).padStart(2, '0');
-            const utcM = String(now.getUTCMinutes()).padStart(2, '0');
-            const utcS = String(now.getUTCSeconds()).padStart(2, '0');
-            document.getElementById('clockUTC').textContent = `${utcH}:${utcM}:${utcS}`;
-        }
-
-        window.onload = function () {
-            updateClocks();
-            setInterval(updateClocks, 1000);
-            loadRosterIntoForm();
-            renderAll();
-        };
+        // Inicializar
+        renderLegsTable();
     </script>
 </body>
 </html>
